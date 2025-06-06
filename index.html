@@ -31,6 +31,7 @@
             display: none; /* Initially hidden */
             flex-direction: column;
             flex-shrink: 0;
+            justify-content: space-between;
         }
 
         .logo-container {
@@ -291,16 +292,16 @@
         .remove-btn svg, .action-btn svg {
             width: 20px;
             height: 20px;
-            fill: #757575; /* Color base explícito para los íconos */
+            fill: #757575;
             transition: fill 0.2s ease;
         }
         
         .remove-btn:hover svg {
-            fill: #c62828; /* Ícono rojo */
+            fill: #c62828;
         }
 
         .action-btn:hover svg {
-            fill: #3f51b5; /* Ícono azul */
+            fill: #3f51b5;
         }
         .remove-btn:hover {
             background-color: #fce4e4;
@@ -473,11 +474,19 @@
         }
 
         /* Admin User Table Styles */
-        #adminListaUsuariosContainer table th,
-        #adminListaUsuariosContainer table td {
-             border: 1px solid #d1d5db;
+        #adminListaUsuariosContainer table th {
+            border: 1px solid #d1d5db;
+            padding: 8px 12px;
         }
-
+         #adminListaUsuariosContainer table td {
+             border: 1px solid #d1d5db;
+             padding: 4px 12px; /* Reduced vertical padding */
+        }
+        .user-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
 
     </style>
 </head>
@@ -498,39 +507,51 @@
     </div>
 
     <div id="sidebar" style="display: none;">
-        <div class="logo-container">
-            <img id="sidebar-logo" src="https://i.postimg.cc/44h8WjRD/Sin-t-tulo-2.png" alt="Logo Juzgado" onerror="this.onerror=null;this.src='https://placehold.co/120x120/EAEAEA/333333?text=Logo';">
+        <div>
+            <div class="logo-container">
+                <img id="sidebar-logo" src="https://i.postimg.cc/44h8WjRD/Sin-t-tulo-2.png" alt="Logo Juzgado" onerror="this.onerror=null;this.src='https://placehold.co/120x120/EAEAEA/333333?text=Logo';">
+            </div>
+            <h2>Menú Principal</h2>
+            <ul>
+                <li id="menuCaratulasJPL" onclick="mostrarContenido('vistaCaratulas', this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/></svg>
+                    CARÁTULAS JPL
+                </li>
+                <li id="menuSernac" onclick="mostrarContenido('vistaCausasSernac', this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3.75 4.5a.75.75 0 01.75-.75h15a.75.75 0 01.75.75v15a.75.75 0 01-.75-.75h-15a.75.75 0 01-.75-.75V4.5zm.75 4.75A.75.75 0 015.25 9h13.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zm0 3.5A.75.75 0 015.25 13h13.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zm0 3.5A.75.75 0 015.25 17h13.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+                    </svg>
+                    CAUSAS SERNAC
+                </li>
+                <li id="menuListadoSernac" class="hidden" onclick="mostrarContenido('vistaListadoSernac', this)">
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 3h18v2H3V3zm0 4h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
+                    </svg>
+                    LISTADO SERNAC
+                </li>
+                <li id="menuListadoCaratulas" class="hidden" onclick="mostrarContenido('vistaListadoCaratulasJPL', this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H7c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H7V5h10v14zM15 7H9v2h6V7zm0 4H9v2h6v-2zm-3 4H9v2h3v-2z"/></svg>
+                    LISTADO CARÁTULAS JPL
+                </li>
+                <li id="menuAdmin" class="hidden" onclick="mostrarContenido('vistaAdmin', this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.946 1.548A11.23 11.23 0 005.133 5.133a11.181 11.181 0 00-2.827-.645A1.94 1.94 0 00.75 6.439c0 .814.505 1.519.942 1.826.16.12.324.232.496.333A11.23 11.23 0 004.03 9.69a11.182 11.182 0 00-.645 2.827 1.94 1.94 0 001.946 2.23c.814 0 1.519-.505 1.826-.942a11.242 11.242 0 001.607-1.918 11.18 11.18 0 002.827.645 1.94 1.94 0 002.23-1.946c0-.814-.505-1.519-.942-1.826a11.242 11.242 0 00-1.607-1.918 11.18 11.18 0 00.645-2.827M12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd" />
+                        <path d="M16.085 4.454a13.233 13.233 0 011.484 1.483c.1.162.21.32.325.482.122.172.25.341.372.514a1.94 1.94 0 01.75 1.19c0 .814-.505 1.519-.942 1.826-.16.12.324.232.496.333a11.23 11.23 0 01-2.228 1.238 11.18 11.18 0 01-.645 2.827 1.94 1.94 0 01-1.946 2.23c-.814 0-1.519-.505-1.826-.942a11.23 11.23 0 01-1.918-1.607 11.182 11.182 0 01-2.827.645 1.94 1.94 0 01-2.23-1.946c0-.814.505-1.519.942-1.826.16-.12.324.232.496.333A11.23 11.23 0 017.97 9.69a11.181 11.181 0 01-.645-2.827 1.94 1.94 0 011.946-2.23c.814 0 1.519.505 1.826.942.3.422.628.817.98 1.18a11.182 11.182 0 012.827-.645 1.94 1.94 0 012.23 1.946c0 .349-.122.683-.326.952a11.238 11.238 0 01-.82 1.056A13.233 13.233 0 0016.085 4.454z" />
+                    </svg>
+                    ADMINISTRACIÓN
+                </li>
+            </ul>
         </div>
-        <h2>Menú Principal</h2>
-        <ul>
-            <li id="menuCaratulasJPL" onclick="mostrarContenido('vistaCaratulas', this)">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/></svg>
-                CARÁTULAS JPL
-            </li>
-            <li id="menuSernac" onclick="mostrarContenido('vistaCausasSernac', this)">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path fill-rule="evenodd" d="M3.75 4.5a.75.75 0 01.75-.75h15a.75.75 0 01.75.75v15a.75.75 0 01-.75-.75h-15a.75.75 0 01-.75-.75V4.5zm.75 4.75A.75.75 0 015.25 9h13.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zm0 3.5A.75.75 0 015.25 13h13.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zm0 3.5A.75.75 0 015.25 17h13.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
-                </svg>
-                CAUSAS SERNAC
-            </li>
-            <li id="menuListadoSernac" class="hidden" onclick="mostrarContenido('vistaListadoSernac', this)">
-                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M3 3h18v2H3V3zm0 4h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
-                </svg>
-                LISTADO SERNAC
-            </li>
-            <li id="menuListadoCaratulas" class="hidden" onclick="mostrarContenido('vistaListadoCaratulasJPL', this)">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H7c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H7V5h10v14zM15 7H9v2h6V7zm0 4H9v2h6v-2zm-3 4H9v2h3v-2z"/></svg>
-                LISTADO CARÁTULAS JPL
-            </li>
-            <li id="menuAdmin" class="hidden" onclick="mostrarContenido('vistaAdmin', this)">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.946 1.548A11.23 11.23 0 005.133 5.133a11.181 11.181 0 00-2.827-.645A1.94 1.94 0 00.75 6.439c0 .814.505 1.519.942 1.826.16.12.324.232.496.333A11.23 11.23 0 004.03 9.69a11.182 11.182 0 00-.645 2.827 1.94 1.94 0 001.946 2.23c.814 0 1.519-.505 1.826-.942a11.242 11.242 0 001.607-1.918 11.18 11.18 0 002.827.645 1.94 1.94 0 002.23-1.946c0-.814-.505-1.519-.942-1.826a11.242 11.242 0 00-1.607-1.918 11.18 11.18 0 00.645-2.827M12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd" />
-                    <path d="M16.085 4.454a13.233 13.233 0 011.484 1.483c.1.162.21.32.325.482.122.172.25.341.372.514a1.94 1.94 0 01.75 1.19c0 .814-.505 1.519-.942 1.826-.16.12.324.232.496.333a11.23 11.23 0 01-2.228 1.238 11.18 11.18 0 01-.645 2.827 1.94 1.94 0 01-1.946 2.23c-.814 0-1.519-.505-1.826-.942a11.23 11.23 0 01-1.918-1.607 11.182 11.182 0 01-2.827.645 1.94 1.94 0 01-2.23-1.946c0-.814.505-1.519.942-1.826.16-.12.324.232.496.333A11.23 11.23 0 017.97 9.69a11.181 11.181 0 01-.645-2.827 1.94 1.94 0 011.946-2.23c.814 0 1.519.505 1.826.942.3.422.628.817.98 1.18a11.182 11.182 0 012.827-.645 1.94 1.94 0 012.23 1.946c0 .349-.122.683-.326.952a11.238 11.238 0 01-.82 1.056A13.233 13.233 0 0016.085 4.454z" />
-                </svg>
-                ADMINISTRACIÓN
-            </li>
-        </ul>
+         <div>
+            <ul id="logout-section">
+                <li onclick="logout()">
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path fill-rule="evenodd" d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm10.72 4.72a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H9a.75.75 0 0 1 0-1.5h10.94l-1.72-1.72a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                    Cerrar sesión
+                </li>
+            </ul>
+        </div>
     </div>
 
     <div id="main-content" style="display: none;">
@@ -859,27 +880,18 @@
     
 <script>
     // --- SUPABASE CLIENT SETUP ---
-    // IMPORTANTE: Reemplaza con tus propias claves de Supabase.
-    const SUPABASE_URL = 'https://dvoukijvhfiepwkgfypt.supabase.co'; // <-- PEGA TU URL AQUÍ
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2b3VraWp2aGZpZXB3a2dmeXB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjU4OTQsImV4cCI6MjA2NDc0MTg5NH0._21AULeT6wcLMgS-fOHrGGkFp5jT2jLyn8KVxqMGi14'; // <-- PEGA TU CLAVE ANON AQUÍ
+    const SUPABASE_URL = 'https://dvoukijvhfiepwkgfypt.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2b3VraWp2aGZpZXB3a2dmeXB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkxNjU4OTQsImV4cCI6MjA2NDc0MTg5NH0._21AULeT6wcLMgS-fOHrGGkFp5jT2jLyn8KVxqMGi14';
 
     let supabaseClient;
     const { createClient } = supabase;
 
-    // This check prevents the app from crashing if Supabase keys are not set.
     if (SUPABASE_URL === 'URL_DE_TU_PROYECTO_SUPABASE' || SUPABASE_ANON_KEY === 'TU_CLAVE_ANON_AQUÍ') {
-        document.body.innerHTML = `
-            <div style="padding: 40px; text-align: center; font-family: sans-serif; background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; margin: 20px; border-radius: 8px;">
-                <h1>Error de Configuración</h1>
-                <p>No has configurado las claves de Supabase. Por favor, edita este documento y reemplaza los valores de <code>SUPABASE_URL</code> y <code>SUPABASE_ANON_KEY</code> con tus credenciales.</p>
-                <p>Puedes encontrar estas claves en la sección 'API' de la configuración de tu proyecto en Supabase.</p>
-            </div>
-        `;
-        throw new Error("Supabase URL and Key are not configured. Please edit the script and replace the placeholder values.");
+        document.body.innerHTML = `<div style="padding: 20px; text-align: center; font-family: sans-serif; color: red;"><h1>Error: Configura tus claves de Supabase.</h1></div>`;
+        throw new Error("Supabase URL and Key not configured.");
     } else {
         supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
-
 
     // --- GLOBAL STATE & CONSTANTS ---
     let idDenuncianteGlobalCounter = 0;
@@ -896,30 +908,64 @@
     let adminEditingUserId = null;
 
 
+    // --- HELPER FUNCTIONS (MODAL) ---
+    function sernac_showModal(title, message) {
+        const sernac_modalTitleEl = document.getElementById('modalTitleSernac');
+        const sernac_modalMessageEl = document.getElementById('modalMessageSernac');
+        const sernac_customModal = document.getElementById('customModalSernac');
+
+        if (sernac_modalTitleEl) sernac_modalTitleEl.textContent = title;
+        if (sernac_modalMessageEl) sernac_modalMessageEl.textContent = message;
+        if (sernac_customModal) {
+            sernac_customModal.classList.remove('opacity-0', 'pointer-events-none');
+            sernac_customModal.classList.add('opacity-100');
+            const modalContent = sernac_customModal.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }
+        }
+    }
+    
+    function sernac_hideModal() {
+        const sernac_customModal = document.getElementById('customModalSernac');
+        if (sernac_customModal) {
+            const modalContent = sernac_customModal.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.classList.remove('scale-100');
+                modalContent.classList.add('scale-95');
+            }
+            sernac_customModal.classList.remove('opacity-100');
+            sernac_customModal.classList.add('opacity-0');
+            setTimeout(() => {
+                sernac_customModal.classList.add('pointer-events-none');
+            }, 300);
+        }
+    }
+
+
     // --- INITIALIZATION ---
     document.addEventListener('DOMContentLoaded', () => {
+        const sernac_closeModalButton = document.getElementById('closeModalButtonSernac');
+        const sernac_modalOkButton = document.getElementById('modalOkButtonSernac');
+        if (sernac_closeModalButton) sernac_closeModalButton.addEventListener('click', sernac_hideModal);
+        if (sernac_modalOkButton) sernac_modalOkButton.addEventListener('click', sernac_hideModal);
         initializeLogin();
     });
 
     async function initializeAppComponents() {
-        // Populate view containers with their templates first
         document.getElementById('vistaCaratulas').innerHTML = document.getElementById('templateVistaCaratulas').innerHTML;
         document.getElementById('vistaListadoCaratulasJPL').innerHTML = document.getElementById('templateVistaListadoCaratulasJPL').innerHTML;
         document.getElementById('vistaCausasSernac').innerHTML = document.getElementById('templateVistaCausasSernac').innerHTML;
         document.getElementById('vistaListadoSernac').innerHTML = document.getElementById('templateVistaListadoSernac').innerHTML;
         document.getElementById('vistaAdmin').innerHTML = document.getElementById('templateVistaAdmin').innerHTML;
 
-        // Initialize JPL part
         setDefaultFormValues();
         await cargarYRenderizarCaratulasGuardadas(); 
         
-        // Setup UI based on user role
         updateMenuVisibility();
-
-        // Attach event listeners
         setupEventListeners();
         
-        // Show the default view
         const firstVisibleMenuItem = document.querySelector("#sidebar ul li:not(.hidden)");
         if (firstVisibleMenuItem) {
             firstVisibleMenuItem.click();
@@ -930,9 +976,6 @@
         const sernac_templateSelector = document.getElementById('templateSelector');
         const sernac_addDataButton = document.getElementById('addDataButton');
         const sernac_exportListadoButton = document.getElementById('exportListadoButton');
-        const sernac_closeModalButton = document.getElementById('closeModalButtonSernac');
-        const sernac_modalOkButton = document.getElementById('modalOkButtonSernac');
-        const sernac_customModal = document.getElementById('customModalSernac');
         const sernacListadoTypeSelector = document.getElementById('sernacListadoTypeSelector');
         const adminUserForm = document.getElementById('adminUserForm');
         const adminCancelarEdicionUsuarioBtn = document.getElementById('adminCancelarEdicionUsuarioBtn');
@@ -965,14 +1008,7 @@
         if (sernacListadoTypeSelector) {
             sernacListadoTypeSelector.addEventListener('change', sernac_renderListado);
         }
-
-        if (sernac_closeModalButton) sernac_closeModalButton.addEventListener('click', sernac_hideModal);
-        if (sernac_modalOkButton) sernac_modalOkButton.addEventListener('click', sernac_hideModal);
-        if (sernac_customModal) {
-            sernac_customModal.addEventListener('click', (event) => {
-                if (event.target === sernac_customModal) sernac_hideModal();
-            });
-        }
+        
         if (sernac_exportListadoButton) {
             sernac_exportListadoButton.addEventListener('click', sernac_exportToExcel);
         }
@@ -985,14 +1021,9 @@
         }
     }
     
-    // --- LOGIN & AUTH SYSTEM using Supabase ---
+    // --- LOGIN & AUTH SYSTEM ---
     function initializeLogin() {
-        const loginModal = document.getElementById('loginModal');
         const loginForm = document.getElementById('loginForm');
-        const rutUsuarioInput = document.getElementById('rutUsuario');
-        
-        loginModal.style.display = 'flex';
-
         loginForm.addEventListener('submit', async function(event) {
             event.preventDefault();
             const rutInput = document.getElementById('rutUsuario');
@@ -1001,36 +1032,26 @@
             
             const rut = formatRut(rutInput.value.trim());
             rutInput.value = rut; 
-            const email = `${rut.replace(/\./g, '').replace(/-/g, '')}@jpl.local`; // Create a fake email from RUT
+            const email = `${rut.replace(/\./g, '').replace(/-/g, '')}@jpl.local`;
             const password = claveInput.value;
 
             if (!validateRut(rut)) {
-                errorMessageDiv.textContent = 'RUT inválido. Formato: XX.XXX.XXX-X o XXXXXXXX-X';
+                errorMessageDiv.textContent = 'RUT inválido.';
                 return;
             }
 
-            const { data: { user }, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
             if (error) {
                 errorMessageDiv.textContent = 'Usuario o clave incorrectos.';
                 console.error('Login Error:', error.message);
+                sernac_showModal("Error de Inicio de Sesión", `Supabase respondió: ${error.message}`);
                 return;
             }
 
-            if (user) {
-                const { data: perfil, error: perfilError } = await supabaseClient
-                    .from('perfiles')
-                    .select('tipo')
-                    .eq('id', user.id)
-                    .single();
-                
-                if (perfilError) {
-                    errorMessageDiv.textContent = 'No se pudo obtener el perfil del usuario.';
-                    console.error('Profile fetch error:', perfilError.message);
-                    return;
-                }
-
-                currentUser = { id: user.id, rut: rut, tipo: perfil.tipo };
+            if (data.user) {
+                const userRole = data.user.user_metadata?.tipo || 'User';
+                currentUser = { id: data.user.id, rut: rut, tipo: userRole };
                 
                 document.getElementById('loginModal').style.display = 'none';
                 document.getElementById('sidebar').style.display = 'flex';
@@ -1038,9 +1059,12 @@
                 
                 await initializeAppComponents();
                 errorMessageDiv.textContent = '';
+            } else {
+                 errorMessageDiv.textContent = 'No se recibieron datos del usuario.';
             }
         });
 
+        const rutUsuarioInput = document.getElementById('rutUsuario');
         if (rutUsuarioInput) {
             rutUsuarioInput.addEventListener('input', (e) => {
                 e.target.value = formatRutOnInput(e.target.value);
@@ -1051,11 +1075,12 @@
     function updateMenuVisibility() {
         if (!currentUser) return;
         
+        console.log("Actualizando visibilidad del menú para el rol:", currentUser.tipo);
         const isAdmin = currentUser.tipo === 'Admin';
 
-        document.getElementById('menuListadoSernac').style.display = isAdmin ? 'flex' : 'none';
-        document.getElementById('menuListadoCaratulas').style.display = isAdmin ? 'flex' : 'none';
-        document.getElementById('menuAdmin').style.display = isAdmin ? 'flex' : 'none';
+        document.getElementById('menuListadoSernac').classList.toggle('hidden', !isAdmin);
+        document.getElementById('menuListadoCaratulas').classList.toggle('hidden', !isAdmin);
+        document.getElementById('menuAdmin').classList.toggle('hidden', !isAdmin);
     }
 
     // --- RUT Formatting and Validation ---
@@ -1125,22 +1150,19 @@
         idDenunciadoGlobalCounter = 0;
         Object.keys(abogadoCountersJPL).forEach(key => delete abogadoCountersJPL[key]);
 
-        agregarCaratulaJPLParteSimple('1', true);
-        agregarCaratulaJPLParteSimple('2', true);
-        
-        if (isFullReset) {
-            window.agregarParteDetallada('denunciante', { nombre: "DELEGACION PRESIDENCIAL REGIONAL DE VALPARAISO", tipo: "DENUNCIANTE" });
-            window.agregarParteDetallada('denunciado', { nombre: "APS SEGURIDAD SPA", tipo: "DENUNCIADO", abogados: [{ nombre: "MARCO ANTONIO OSSANDON", correo: "OSSANDONMARCO@YAHOO.ES" }] });
-        }
+        agregarCaratulaJPLParteSimple('1');
+        agregarCaratulaJPLParteSimple('2');
+        agregarParteDetallada('denunciante');
+        agregarParteDetallada('denunciado');
 
-        document.getElementById('jplCaratulaTipoJuez').value = 'titular';
-        actualizarNombreJuez();
-        document.getElementById('jplCaratulaTipoSecretario').value = 'abogado';
-        actualizarNombreSecretario();
-        document.getElementById('jplCaratulaRol').value = "1583-2025";
-        document.getElementById('jplCaratulaMateria').value = "LEY DE SEGURIDAD PRIVADA";
-        document.getElementById('jplCaratulaFechaInicio').value = "03 DE FEBRERO DE 2025";
-        document.getElementById('jplCaratulaActuario').value = "JUAN PEREZ";
+        const fieldsToClear = [
+            'jplCaratulaRol', 'jplCaratulaJuez', 'jplCaratulaSecretario', 
+            'jplCaratulaMateria', 'jplCaratulaFechaInicio', 'jplCaratulaActuario'
+        ];
+        fieldsToClear.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
 
         document.getElementById('btnGenerarActualizarPDF').textContent = 'Generar PDF y Guardar';
         document.getElementById('btnCancelarEdicion').style.display = 'none';
@@ -1222,7 +1244,7 @@
             return;
         }
 
-        const doc = generarPDF(dbResponse.data); // Generate PDF with data from DB
+        const doc = generarPDF(dbResponse.data);
         doc.save(`Caratula_JPL_${dbResponse.data.rol || 'SIN_ROL'}.pdf`);
         
         sernac_showModal("Éxito", "La carátula ha sido guardada y el PDF generado.");
@@ -1248,6 +1270,7 @@
 
         const container = document.getElementById('lista-caratulas-guardadas-container');
         const noCaratulasMsg = document.getElementById('no-caratulas-mensaje');
+        if (!container || !noCaratulasMsg) return;
         container.innerHTML = '';
 
         if (caratulas.length === 0) {
@@ -1257,22 +1280,42 @@
         noCaratulasMsg.style.display = 'none';
 
         const templateNode = document.getElementById('plantillaCaratulaGuardadaItem');
+        if (!templateNode) return;
         
         caratulas.forEach(caratula => {
             const clone = templateNode.content.cloneNode(true);
             const itemDiv = clone.querySelector('.saved-caratula-item');
+            if (!itemDiv) return;
+            
             itemDiv.dataset.id = caratula.id;
 
             const caratuladoParte1Str = (caratula.caratulado_parte1_nombres || []).join(' Y ');
             const caratuladoParte2Str = (caratula.caratulado_parte2_nombres || []).join(' Y ');
             const caratuladoCompleto = `${caratuladoParte1Str} CON ${caratuladoParte2Str}`;
             const fechaFormateada = new Date(caratula.created_at).toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            
+            const infoDiv = itemDiv.querySelector('.saved-caratula-info');
+            if(infoDiv) {
+                const caratuladoDisplayEl = infoDiv.querySelector('.caratulado-display');
+                if (caratuladoDisplayEl) caratuladoDisplayEl.textContent = caratuladoCompleto || 'N/A';
 
-            itemDiv.querySelector('.caratulado-display').textContent = caratuladoCompleto || 'N/A';
-            itemDiv.querySelector('strong:nth-of-type(2) + span').textContent = caratula.rol || 'N/A';
-            itemDiv.querySelector('strong:nth-of-type(3) + span').textContent = caratula.materia || 'N/A';
-            itemDiv.querySelector('strong:nth-of-type(4) + span').textContent = caratula.actuario || 'N/A';
-            itemDiv.querySelector('strong:nth-of-type(5) + span').textContent = fechaFormateada;
+                const fields = {
+                    'ROL N°:': caratula.rol || 'N/A',
+                    'MATERIA:': caratula.materia || 'N/A',
+                    'ACTUARIO:': caratula.actuario || 'N/A',
+                    'CREADA:': fechaFormateada
+                };
+
+                infoDiv.querySelectorAll('strong').forEach(strongEl => {
+                    const label = strongEl.textContent.trim();
+                    if (fields[label]) {
+                        const span = strongEl.nextElementSibling;
+                        if (span && span.tagName === 'SPAN') {
+                            span.textContent = fields[label];
+                        }
+                    }
+                });
+            }
             
             itemDiv.querySelector('.btn-view-pdf').addEventListener('click', () => generarYDescargarPDFGuardado(caratula.id));
             itemDiv.querySelector('.btn-edit-caratula').addEventListener('click', () => iniciarEdicionCaratula(caratula.id));
@@ -1349,7 +1392,6 @@
         mostrarContenido('vistaCaratulas', document.getElementById('menuCaratulasJPL'));
     }
     
-    // --- UTILITY & HELPER Functions for JPL ---
     function getValueById(id) {
         const element = document.getElementById(id);
         return element ? (element.value.trim()).toUpperCase() : '';
@@ -1527,8 +1569,6 @@
     window.agregarPatrocinante = (idParteUnica, elContenedor) => agregarAbogado(idParteUnica, elContenedor, true);
     
     function generarPDF(caratulaData) {
-        // This function remains largely the same, but it's important to use the correct property names from Supabase
-        // e.g., caratulaData.juez_nombre instead of caratulaData.juezNombre
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'p', unit: 'pt', format: 'legal' });
 
@@ -1617,8 +1657,172 @@
     }
 
     // --- SERNAC Functions ---
-    // (Existing TEMPLATE_DEFINITIONS_SERNAC, sernac_showModal, sernac_hideModal, etc. remain here)
-    // ... all other SERNAC and helper functions remain the same as the previous version ...
+    const TEMPLATE_DEFINITIONS_SERNAC = {
+        "sentencias_sernac": {
+            fileNameBase: "Causas_Sentencias_SERNAC",
+            displayName: "Causas con Sentencias",
+            fields: [
+                { name: "Individualización del juzgado", type: "text", fixedValue: "Primer Juzgado de Policía Local" },
+                { name: "Comuna/Región", type: "text", fixedValue: "Viña del Mar/Valparaíso" },
+                { 
+                    isGroup: true, 
+                    groupFields: [
+                        { name: "Rol/N° de causa", type: "text", pattern: "\\d{6}/\\d{4}", maxlength: 11, placeholder: "Causa/Año", widthClass: "w-full sm:w-2/5", isRolCausaField: true }, 
+                        { name: "Fecha de sentencia", type: "text", placeholder: "DD/MM/AAAA", maxlength: 10, pattern: "\\d{2}/\\d{2}/\\d{4}", widthClass: "w-full sm:w-3/5", isDateText: true, isMainDateField: true } 
+                    ] 
+                },
+                { name: "Nombre o razón social del proveedor denunciado/demandado/querellado", type: "textarea" },
+                { name: "RUT proveedor demandado/querellado", type: "text" },
+                { name: "Norma legal y/o reglamentaria que funda denuncia/demanda/querella (especificar artículo, inciso, letra o numeral)", type: "textarea" },
+                { name: "Tipo de Sentencia", type: "select", options: ["", "Definitiva", "Interlocutoria"] },
+                { name: "Resultado de Sentencia", type: "select", options: ["", "Condenatoria", "Absolutoria", "Avenimiento o Acuerdo Conciliatorio"] }
+            ]
+        },
+        "iniciadas_sernac": {
+            fileNameBase: "Causas_Iniciadas_SERNAC",
+            displayName: "Causas Iniciadas",
+            fields: [
+                { name: "Individualización del juzgado", type: "text", fixedValue: "Primer Juzgado de Policía Local" },
+                { name: "Comuna/Región", type: "text", fixedValue: "Viña del Mar/Valparaíso" },
+                { 
+                    isGroup: true, 
+                    groupFields: [
+                        { name: "Rol/N° de causa", type: "text", pattern: "\\d{6}/\\d{4}", maxlength: 11, placeholder: "Causa/Año", widthClass: "w-full sm:w-2/5", isRolCausaField: true },
+                        { name: "Fecha de inicio de la causa", type: "text", placeholder: "DD/MM/AAAA", maxlength: 10, pattern: "\\d{2}/\\d{2}/\\d{4}", widthClass: "w-full sm:w-3/5", isDateText: true, isMainDateField: true } 
+                    ] 
+                },
+                { 
+                    name: "Naturaleza de la causa", 
+                    type: "select", 
+                    options: [
+                        "", 
+                        "Sancionar al proveedor que incurra en infracción",
+                        "Sancionar al proveedor que incurra en infracción más indemnización de perjuicios o reparación",
+                        "Nulidad de cláusulas abusivas incorporadas en contratos de adhesión",
+                        "Nulidad de cláusulas abusivas incorporadas en contratos de adhesión más indemnización de perjuicios o reparación",
+                        "Obtención de la prestación de la obligación incumplida",
+                        "Obtención de la prestación de la obligación incumplida e indemnización de perjuicios o reparación",
+                        "Cese de la conducta contraria a los derechos de los consumidores",
+                        "Cese de la conducta contraria a los derechos de los consumidores más indemnización de perjuicios o reparación",
+                        "Indemnización de perjuicios o reparación",
+                        "Todas las anteriores"
+                    ] 
+                },
+                { name: "Nombre o razón social del proveedor denunciado/demandado/querellado", type: "textarea" },
+                { name: "Cédula de identidad o RUT", type: "text" },
+                { name: "Norma legal y/o reglamentaria que funda denuncia/demanda/querella (especificar artículo, inciso, letra o numeral)", type: "textarea" }
+            ]
+        }
+    };
+    
+    function sernac_createFieldElement(field, baseId) {
+        const fieldContainer = document.createElement('div');
+        if (field.widthClass) fieldContainer.className = field.widthClass;
+        else fieldContainer.className = 'w-full';
+
+        const label = document.createElement('label');
+        label.htmlFor = baseId;
+        label.textContent = field.name || `Campo`;
+        label.className = 'block text-sm font-medium text-gray-700 mb-1';
+        
+        let inputElement;
+        if (field.type === "select") {
+            inputElement = document.createElement('select');
+            inputElement.className = 'mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm';
+            if (field.options && Array.isArray(field.options)) {
+                field.options.forEach(optValue => {
+                    const option = document.createElement('option');
+                    option.value = optValue === "" ? "" : optValue;
+                    option.textContent = optValue === "" ? `-- Selecciona --` : optValue;
+                    inputElement.appendChild(option);
+                });
+            }
+        } else if (field.type === "textarea") {
+            inputElement = document.createElement('textarea');
+            inputElement.className = 'mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm textarea-wide';
+            inputElement.placeholder = field.placeholder || `Ingresa ${field.name || `dato`}`;
+        } else {
+            inputElement = document.createElement('input');
+            inputElement.type = field.type || 'text';
+            inputElement.className = 'mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm';
+            inputElement.placeholder = field.placeholder || `Ingresa ${field.name || `dato`}`;
+            if (field.pattern) inputElement.pattern = field.pattern;
+            if (field.maxlength) inputElement.maxLength = field.maxlength;
+
+            if (field.isRolCausaField) {
+                 inputElement.addEventListener('input', function(e) {
+                    const originalValue = e.target.value;
+                    e.target.value = originalValue.replace(/[^\d/]/g, '');
+                });
+            }
+            if (field.isDateText) {
+                inputElement.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    let formattedValue = '';
+                    if (value.length > 0) formattedValue += value.substring(0, 2);
+                    if (value.length > 2) formattedValue += '/' + value.substring(2, 4);
+                    if (value.length > 4) formattedValue += '/' + value.substring(4, 8);
+                    e.target.value = formattedValue;
+                });
+                inputElement.addEventListener('blur', function(e) {
+                    const dateStr = e.target.value;
+                    if (dateStr === "") return;
+                    const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+                    const match = dateStr.match(regex);
+                    let isValid = false; let modalMsg = "";
+                    if (match) {
+                        const day = parseInt(match[1], 10); const month = parseInt(match[2], 10); const year = parseInt(match[3], 10);
+                        if (year >= 1000 && year <= 9999 && month >= 1 && month <= 12) {
+                            const daysInMonth = new Date(year, month, 0).getDate();
+                            if (day >= 1 && day <= daysInMonth) isValid = true;
+                            else modalMsg = `El día (${day}) no es válido para el mes/año en '${field.name}'.`;
+                        } else modalMsg = `El mes (${month}) o año (${year}) en '${field.name}' no son válidos. Año: 4 dígitos (1000-9999).`;
+                    } else modalMsg = `Formato de fecha en '${field.name}' debe ser DD/MM/AAAA.`;
+                    if (!isValid) { sernac_showModal("Fecha Inválida", modalMsg); e.target.value = ""; }
+                });
+            }
+        }
+        inputElement.id = baseId; inputElement.name = baseId;
+        fieldContainer.appendChild(label); fieldContainer.appendChild(inputElement);
+        return fieldContainer;
+    }
+    
+    function sernac_createForm(fields) {
+        const sernac_dataForm = document.getElementById('dataForm');
+        if(!sernac_dataForm) return;
+        sernac_dataForm.innerHTML = ''; sernac_fieldCounter = 0;
+        if (!fields || fields.length === 0) {
+            sernac_showModal('Error de Configuración', 'No hay campos definidos. Revisa el código.'); return;
+        }
+        fields.forEach((fieldOrGroup) => {
+            if (fieldOrGroup.fixedValue !== undefined) return;
+            if (fieldOrGroup.isGroup) {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0';
+                fieldOrGroup.groupFields.forEach(gf => {
+                    const fieldId = `sernac_field_${sernac_fieldCounter++}`;
+                    groupDiv.appendChild(sernac_createFieldElement(gf, fieldId));
+                });
+                sernac_dataForm.appendChild(groupDiv);
+            } else {
+                const fieldId = `sernac_field_${sernac_fieldCounter++}`;
+                sernac_dataForm.appendChild(sernac_createFieldElement(fieldOrGroup, fieldId));
+            }
+        });
+    }
+
+    function sernac_resetFormAndButton() {
+        const sernac_dataForm = document.getElementById('dataForm');
+        const sernac_formSection = document.getElementById('formSection');
+        const sernac_actionButtonSection = document.getElementById('actionButtonSection');
+        const sernac_formTitle = document.getElementById('formTitle');
+
+        if(sernac_dataForm) sernac_dataForm.innerHTML = '';
+        if(sernac_formSection) sernac_formSection.classList.add('hidden');
+        if(sernac_actionButtonSection) sernac_actionButtonSection.classList.add('hidden');
+        if(sernac_formTitle) sernac_formTitle.textContent = '2. Completa los datos para la nueva fila:';
+    }
+    
     async function handleAddSernacData() {
         if (!sernac_currentFieldsDefinition || sernac_currentFieldsDefinition.length === 0) {
             sernac_showModal('Error', 'Selecciona un tipo de documento primero.');
@@ -1669,12 +1873,160 @@
         }
     }
     
-    // ... other SERNAC functions need to be adapted to fetch from Supabase ...
     async function sernac_renderListado() {
-        // This function would now fetch data from `sernac_causas` table in Supabase
-        // and filter based on the dropdown selection, then call sernac_createTableHTML
+        const sernac_listadoSentenciasDiv = document.getElementById('listadoSentencias');
+        const sernac_listadoIniciadasDiv = document.getElementById('listadoIniciadas');
+        const sernac_exportListadoButton = document.getElementById('exportListadoButton');
+        const sernacListadoTypeSelector = document.getElementById('sernacListadoTypeSelector');
+        const sernacNoListSelectedMsg = document.getElementById('sernac-no-list-selected-mensaje');
+
+        if(sernac_listadoSentenciasDiv) {
+            sernac_listadoSentenciasDiv.classList.remove('active-sernac-table');
+            sernac_listadoSentenciasDiv.innerHTML = ''; 
+        }
+        if(sernac_listadoIniciadasDiv) {
+            sernac_listadoIniciadasDiv.classList.remove('active-sernac-table');
+            sernac_listadoIniciadasDiv.innerHTML = ''; 
+        }
+        if(sernacNoListSelectedMsg) sernacNoListSelectedMsg.style.display = 'none';
+        
+        const selectedListType = sernacListadoTypeSelector ? sernacListadoTypeSelector.value : "";
+        
+        const { data: sernac_DataStorage, error } = await supabaseClient.from('sernac_causas').select('*').order('created_at', { ascending: false });
+        if (error) {
+            console.error("Error cargando causas SERNAC:", error);
+            sernac_showModal("Error", "No se pudieron cargar las causas SERNAC.");
+            return;
+        }
+
+
+        if (selectedListType === "") { 
+            if (sernacNoListSelectedMsg) sernacNoListSelectedMsg.style.display = 'block';
+             if(sernac_exportListadoButton) sernac_exportListadoButton.classList.toggle('hidden', sernac_DataStorage.length === 0); 
+            return;
+        }
+        
+        if(sernac_exportListadoButton) sernac_exportListadoButton.classList.toggle('hidden', sernac_DataStorage.length === 0);
+
+        if (selectedListType === "sentencias_sernac_list") {
+            const sentencias = sernac_DataStorage.filter(item => item.tipo_documento_key === 'sentencias_sernac');
+            if (sernac_listadoSentenciasDiv) {
+                sernac_listadoSentenciasDiv.innerHTML = sernac_createTableHTML(sentencias, TEMPLATE_DEFINITIONS_SERNAC.sentencias_sernac.fields);
+                sernac_listadoSentenciasDiv.classList.add('active-sernac-table');
+            }
+        } else if (selectedListType === "iniciadas_sernac_list") {
+            const iniciadas = sernac_DataStorage.filter(item => item.tipo_documento_key === 'iniciadas_sernac');
+            if (sernac_listadoIniciadasDiv) {
+                sernac_listadoIniciadasDiv.innerHTML = sernac_createTableHTML(iniciadas, TEMPLATE_DEFINITIONS_SERNAC.iniciadas_sernac.fields);
+                sernac_listadoIniciadasDiv.classList.add('active-sernac-table');
+            }
+        }
+    }
+
+
+    function sernac_createTableHTML(dataItems, fieldDefinitions) {
+        let tableHTML = '<table class="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg">';
+        tableHTML += '<thead class="bg-gray-50"><tr>';
+        
+        const headers = [];
+        fieldDefinitions.forEach(fd => {
+            if (fd.isGroup) fd.groupFields.forEach(gf => headers.push(gf.name));
+            else headers.push(fd.name);
+        });
+
+        headers.forEach(header => {
+            tableHTML += `<th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border border-gray-300">${header}</th>`;
+        });
+        tableHTML += '</tr></thead><tbody class="bg-white divide-y divide-gray-200">';
+
+        if (!dataItems || dataItems.length === 0) {
+            const typeName = fieldDefinitions === TEMPLATE_DEFINITIONS_SERNAC.sentencias_sernac.fields ? "Causas con Sentencias" : "Causas Iniciadas";
+            tableHTML += `<tr><td colspan="${headers.length}" class="px-4 py-3 text-center text-sm text-gray-500 border border-gray-300">No hay ${typeName.toLowerCase()} agregadas aún.</td></tr>`;
+        } else {
+            dataItems.forEach(item => {
+                tableHTML += '<tr>';
+                headers.forEach(headerName => {
+                    tableHTML += `<td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border border-gray-300">${item.datos[headerName] || ''}</td>`;
+                });
+                tableHTML += '</tr>';
+            });
+        }
+
+        tableHTML += '</tbody></table>';
+        return tableHTML;
     }
     
+    async function sernac_exportToExcel() {
+        const { data: sernac_DataStorage, error } = await supabaseClient.from('sernac_causas').select('*');
+        if (error) {
+             sernac_showModal("Error", "No se pudieron obtener los datos para exportar.");
+             return;
+        }
+
+        if (sernac_DataStorage.length === 0) {
+            sernac_showModal("Vacío", "No hay datos en el listado para exportar."); return;
+        }
+        const wb = XLSX.utils.book_new();
+        const sentenciasData = sernac_DataStorage.filter(item => item.tipo_documento_key === 'sentencias_sernac');
+        if (sentenciasData.length > 0) {
+            const sheetDataSentencias = sernac_formatDataForSheet(sentenciasData, TEMPLATE_DEFINITIONS_SERNAC.sentencias_sernac.fields);
+            const wsSentencias = XLSX.utils.aoa_to_sheet(sheetDataSentencias, { cellDates: true });
+            XLSX.utils.book_append_sheet(wb, wsSentencias, "Sentencias SERNAC");
+        }
+        const iniciadasData = sernac_DataStorage.filter(item => item.tipo_documento_key === 'iniciadas_sernac');
+        if (iniciadasData.length > 0) {
+            const sheetDataIniciadas = sernac_formatDataForSheet(iniciadasData, TEMPLATE_DEFINITIONS_SERNAC.iniciadas_sernac.fields);
+            const wsIniciadas = XLSX.utils.aoa_to_sheet(sheetDataIniciadas, { cellDates: true });
+            XLSX.utils.book_append_sheet(wb, wsIniciadas, "Iniciadas SERNAC");
+        }
+        
+        if (wb.SheetNames.length > 0) {
+            XLSX.writeFile(wb, `Listado_SERNAC_${new Date().toISOString().slice(0,10)}.xlsx`);
+            sernac_showModal("Éxito", "Listado exportado a Excel.");
+        } else {
+            sernac_showModal("Vacío", "No se encontraron datos para las hojas de Excel.");
+        }
+    }
+
+    function sernac_formatDataForSheet(dataItems, fieldDefinitions) {
+        const headers = [];
+        fieldDefinitions.forEach(fd => {
+            if (fd.isGroup) fd.groupFields.forEach(gf => headers.push(gf.name));
+            else headers.push(fd.name);
+        });
+
+        const sheetData = [headers];
+
+        dataItems.forEach(item => {
+            const row = [];
+            headers.forEach(headerName => {
+                 let value = item.datos[headerName] || '';
+                const originalFieldDef = sernac_findFieldDefinitionByName(headerName, fieldDefinitions);
+                if (originalFieldDef && originalFieldDef.isDateText && value) {
+                    const parts = value.split('/');
+                    if (parts.length === 3) {
+                        const dateObj = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+                        if (!isNaN(dateObj.getTime())) value = dateObj;
+                    }
+                }
+                row.push(value);
+            });
+            sheetData.push(row);
+        });
+        return sheetData;
+    }
+    
+    function sernac_findFieldDefinitionByName(fieldName, fieldDefinitions) {
+        for (const fd of fieldDefinitions) {
+            if (fd.isGroup) {
+                const foundInGroup = fd.groupFields.find(gf => gf.name === fieldName);
+                if (foundInGroup) return foundInGroup;
+            } else if (fd.name === fieldName) {
+                return fd;
+            }
+        }
+        return null;
+    }
     
     // --- User Admin Functions ---
     async function renderAdminUserList() {
@@ -1710,20 +2062,26 @@
             perfiles.forEach(perfil => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${perfil.nombre || 'N/A'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${perfil.rut}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${perfil.tipo || 'User'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button class="text-indigo-600 hover:text-indigo-900 mr-3 btn-edit-user" data-id="${perfil.id}">Editar</button>
-                        ${perfil.id !== currentUser.id ? `<button class="text-red-600 hover:text-red-900 btn-delete-user" data-id="${perfil.id}">Eliminar</button>` : ''}
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">${perfil.nombre || 'N/A'}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">${perfil.rut}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">${perfil.tipo || 'User'}</td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm font-medium">
+                        <div class="user-actions">
+                            <button class="action-btn btn-edit-user" data-id="${perfil.id}" title="Editar Usuario">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 0 24 24" width="20px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.26 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34a.39.39 0 0 0-.55 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                            </button>
+                            ${perfil.id !== currentUser.id ? `<button class="remove-btn btn-delete-user" data-id="${perfil.id}" title="Eliminar Usuario">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 0 24 24" width="20px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            </button>` : ''}
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
             container.appendChild(table);
 
-            container.querySelectorAll('.btn-edit-user').forEach(btn => btn.addEventListener('click', (e) => adminEditUser(e.target.dataset.id)));
-            container.querySelectorAll('.btn-delete-user').forEach(btn => btn.addEventListener('click', (e) => adminDeleteUser(e.target.dataset.id)));
+            container.querySelectorAll('.btn-edit-user').forEach(btn => btn.addEventListener('click', (e) => adminEditUser(e.currentTarget.dataset.id)));
+            container.querySelectorAll('.btn-delete-user').forEach(btn => btn.addEventListener('click', (e) => adminDeleteUser(e.currentTarget.dataset.id)));
         }
     }
 
@@ -1742,16 +2100,22 @@
         }
 
         if (adminEditingUserId) { // --- UPDATE USER ---
-            const { data, error } = await supabaseClient.auth.admin.updateUserById(adminEditingUserId, { password: clave || undefined });
-            if (error) {
-                console.error("Error updating auth user:", error);
-                sernac_showModal("Error", "No se pudo actualizar la clave del usuario.");
-                return;
+            const updateData = {
+                nombre: nombre,
+                tipo: tipo
+            };
+            if (clave) {
+                updateData.password = clave;
             }
-            const { error: profileError } = await supabaseClient.from('perfiles').update({ nombre, rut, tipo }).eq('id', adminEditingUserId);
-            if (profileError) {
-                console.error("Error updating profile:", profileError);
-                sernac_showModal("Error", "No se pudo actualizar el perfil del usuario.");
+
+            const { data, error } = await supabaseClient.functions.invoke('update-user', {
+                body: { userId: adminEditingUserId, updateData: updateData },
+            });
+
+            if (error || (data && data.error)) {
+                const errorMessage = error?.message || data?.error.message;
+                console.error("Error updating user via function:", errorMessage);
+                sernac_showModal("Error", `La función segura de actualización falló: ${errorMessage}`);
             } else {
                 sernac_showModal("Éxito", "Usuario actualizado correctamente.");
                 adminCancelUserEdit();
@@ -1762,14 +2126,14 @@
                 sernac_showModal("Error", "La clave es requerida para nuevos usuarios.");
                 return;
             }
-            const { data, error } = await supabaseClient.auth.admin.createUser({
-                email: email,
-                password: clave,
-                user_metadata: { nombre: nombre, rut: rut, tipo: tipo }
+            const { data, error } = await supabaseClient.functions.invoke('create-user', {
+                body: { email, password: clave, nombre, rut, tipo },
             });
-            if (error) {
-                console.error("Error creating user:", error);
-                sernac_showModal("Error", error.message);
+
+            if (error || (data && data.error)) {
+                const errorMessage = error?.message || data?.error;
+                console.error("Error creating user via function:", errorMessage);
+                sernac_showModal("Error", `La función segura falló: ${errorMessage}`);
             } else {
                 sernac_showModal("Éxito", "Usuario creado correctamente.");
                 adminCancelUserEdit();
@@ -1788,10 +2152,14 @@
         document.getElementById('adminUserName').value = perfil.nombre || '';
         const adminUserRutInput = document.getElementById('adminUserRut');
         adminUserRutInput.value = perfil.rut;
-        adminUserRutInput.readOnly = true; // Prevent changing RUT/email
+        adminUserRutInput.readOnly = true; 
         
-        document.getElementById('adminUserClave').value = '';
-        document.getElementById('adminUserClave').placeholder = 'Dejar en blanco para no cambiar clave';
+        const claveInput = document.getElementById('adminUserClave');
+        claveInput.value = '';
+        claveInput.placeholder = 'Dejar en blanco para no cambiar';
+        claveInput.required = false;
+        claveInput.disabled = false;
+
         document.getElementById('adminUserTipo').value = perfil.tipo || 'User';
         
         adminEditingUserId = id;
@@ -1803,7 +2171,10 @@
         document.getElementById('adminFormTitulo').textContent = 'Crear Nuevo Usuario';
         document.getElementById('adminUserForm').reset();
         adminEditingUserId = null;
-        document.getElementById('adminUserClave').placeholder = '';
+        const claveInput = document.getElementById('adminUserClave');
+        claveInput.placeholder = '';
+        claveInput.required = true;
+        claveInput.disabled = false;
         document.getElementById('adminUserRut').readOnly = false;
         document.getElementById('adminGuardarUsuarioBtn').textContent = 'Guardar Usuario';
         document.getElementById('adminCancelarEdicionUsuarioBtn').classList.add('hidden');
@@ -1824,6 +2195,14 @@
                 await renderAdminUserList();
             }
         }
+    }
+    
+    async function logout() {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) {
+            console.error('Error during sign out:', error.message);
+        }
+        window.location.reload();
     }
 
 </script>

@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión JPL y SERNAC - Primer Juzgado de Policía Local de Viña del Mar</title>
+    <!-- LIBRERÍAS EXTERNAS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: #e9ebee;
+            color: #000;
+            font-size: 13px;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        #sidebar {
+            width: 240px;
+            background-color: #EAEAEA;
+            padding: 20px;
+            color: #333;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            display: none; /* Initially hidden */
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #sidebar-logo {
+            max-width: 120px;
+            max-height: 120px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #sidebar h2 {
+            color: #333;
+            text-align: center;
+            font-size: 1.4em;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        #sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #sidebar ul li {
+            padding: 13px 18px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            font-size: 0.98em;
+            display: flex;
+            align-items: center;
+            color: #444;
+        }
+        
+        #sidebar ul li svg {
+            margin-right: 12px;
+            width: 22px;
+            height: 22px;
+            fill: #444; 
+            transition: fill 0.2s ease;
+        }
+
+        #sidebar ul li:hover {
+            background-color: #dcdcdc;
+            color: #000;
+        }
+        #sidebar ul li.active {
+             background-color: #3498db;
+             color: #fff;
+        }
+        
+        #sidebar ul li:hover svg {
+            fill: #000; 
+        }
+
+        #sidebar ul li.active svg {
+            fill: #fff; 
+        }
+
+        #main-content {
+            flex-grow: 1;
+            padding: 25px;
+            overflow-y: auto;
+            display: none; /* Initially hidden */
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 35px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 950px;
+            margin: 0 auto;
+        }
+        
+        .jpl-view-title {
+            font-size: 1.75rem;
+            line-height: 2.25rem;
+            font-weight: 700;
+            text-align: center;
+            color: #3730a3;
+            margin-bottom: 2rem;
+        }
+        @media (min-width: 768px) {
+            .jpl-view-title {
+                font-size: 1.875rem;
+                line-height: 2.25rem;
+            }
+        }
+
+
+        .container h2 {
+            color: #283593;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 1px solid #c5cae9;
+            padding-bottom: 12px;
+        }
+        .container h3 {
+            color: #3949ab;
+            margin-top: 25px;
+            margin-bottom: 18px;
+            font-size: 1.3em;
+        }
+        .container h4 {
+            color: #455a64;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-bottom: 1px dashed #bdc3c7;
+            padding-bottom: 6px;
+        }
+        .form-section, .parte-block, .abogado-block, .jpl-parte-block {
+            margin-bottom: 30px;
+            padding: 25px;
+            border: 1px solid #dfe3e8;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+        .parte-block {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 25px;
+            margin-top: 25px;
+        }
+        .parte-block:first-child {
+            border-top: none;
+            margin-top: 0;
+        }
+        .abogado-block {
+            margin-left: 20px;
+            margin-top:15px;
+            background-color: #f9fafb;
+       }
+        .jpl-parte-item-simple {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+        }
+        .jpl-parte-item-simple input {
+            flex-grow: 1;
+        }
+        
+        .container label {
+            font-weight: 600;
+            color: #000;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            display: block;
+        }
+
+        .container input[type="text"],
+        .container input[type="email"],
+        .container input[type="password"],
+        .container select,
+        .container textarea {
+            width: 100%;
+            padding: 10px 14px;
+            margin-bottom: 0;
+            border: 1px solid #ccd0d5;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 0.95em;
+            color: #000;
+            background-color: #fff;
+            text-transform: uppercase;
+        }
+        #viewCausasSernacContainer input, #viewCausasSernacContainer select, #viewCausasSernacContainer textarea,
+        #vistaAdmin input, #vistaAdmin select {
+            text-transform: none;
+        }
+
+
+        .container input[type="text"]:focus,
+        .container input[type="email"]:focus,
+        .container input[type="password"]:focus,
+        .container select:focus,
+        .container textarea:focus {
+            border-color: #3f51b5;
+            box-shadow: 0 0 0 2.5px rgba(63, 81, 181, 0.25);
+            outline: none;
+        }
+        .container textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .field-group {
+            display: grid;
+            grid-template-columns: 230px 1fr;
+            gap: 10px 15px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .field-group label {
+            text-align: left;
+            padding-right: 8px;
+            margin-bottom: 0;
+        }
+        .field-group-full {
+            grid-template-columns: 1fr;
+        }
+        .field-group-full label {
+            text-align: left;
+            margin-bottom: 6px;
+        }
+        .hidden-field, .hidden {
+            display: none !important;
+        }
+        .vista-contenido {
+            display: none;
+        }
+        .vista-contenido.active {
+            display: block;
+        }
+
+        .container button:not(.remove-btn):not(.action-btn), .container .add-btn {
+            background-color: #3f51b5;
+            color: white;
+            padding: 11px 22px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+            margin-top: 12px;
+            text-transform: uppercase;
+        }
+        .container button:hover, .container .add-btn:hover {
+            background-color: #303f9f;
+        }
+        .remove-btn, .action-btn {
+            background-color: transparent;
+            border: 1px solid #dcdcdc;
+            padding: 0;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            flex-shrink: 0;
+            cursor: pointer;
+            color: #757575;
+        }
+        .remove-btn svg, .action-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #757575; /* Color base explícito para los íconos */
+            transition: fill 0.2s ease;
+        }
+        
+        .remove-btn:hover svg {
+            fill: #c62828; /* Ícono rojo */
+        }
+
+        .action-btn:hover svg {
+            fill: #3f51b5; /* Ícono azul */
+        }
+        .remove-btn:hover {
+            background-color: #fce4e4;
+            border-color: #e53935;
+            color: #c62828;
+        }
+        
+        .action-btn:hover {
+            background-color: #e8eaf6;
+            border-color: #3f51b5;
+            color: #3f51b5;
+        }
+
+        .main-generate-btn {
+            width: 100%;
+            padding: 14px 25px;
+            font-size: 1.05em;
+            margin-top: 30px;
+        }
+
+        .saved-caratula-item {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .saved-caratula-info {
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 5px 10px;
+            font-size: 0.9em;
+        }
+        .saved-caratula-info strong {
+            color: #333;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .saved-caratula-info span {
+            color: #555;
+            word-break: break-word;
+        }
+         .saved-caratula-info .caratulado-display {
+            grid-column: span 2;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #1a237e;
+            margin-bottom: 5px;
+        }
+
+        .saved-caratula-actions {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        #no-caratulas-mensaje {
+            text-align: center;
+            color: #757575;
+            font-size: 1.1em;
+            padding: 30px;
+        }
+
+        /* SERNAC Specific Styles */
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .textarea-wide {
+            min-height: 80px;
+        }
+        #viewCausasSernacContainer,
+        #viewListadoSernacContainer {
+            width: 100%;
+        }
+        #listadoSentencias, #listadoIniciadas {
+            display: none;
+            margin-top: 1.5rem;
+        }
+        #listadoSentencias.active-sernac-table,
+        #listadoIniciadas.active-sernac-table {
+            display: block;
+        }
+        #viewListadoSernacContainer table th,
+        #viewListadoSernacContainer table td {
+            border: 1px solid #d1d5db;
+        }
+        #viewListadoSernacContainer table th {
+            background-color: #f9fafb;
+        }
+        
+        /* Login Modal Styles */
+        #loginModal {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .login-modal-content {
+            background-color: #fff;
+            padding: 35px 45px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+        .login-modal-content img#loginModalLogo {
+            max-width: 140px;
+            max-height: 140px;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .login-modal-content .juzgado-titulo {
+            color: #000000;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+         .login-modal-content .juzgado-subtitulo {
+            color: #000000;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 1.2em;
+            margin-bottom: 25px;
+        }
+        .login-modal-content input[type="text"],
+        .login-modal-content input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1em;
+            text-transform: none;
+        }
+        .login-modal-content button {
+            background-color: #3f51b5;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+        .login-modal-content button:hover {
+            background-color: #303f9f;
+        }
+        #loginErrorMessage {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 10px;
+            min-height: 1.2em;
+        }
+
+        /* Admin User Table Styles */
+        #adminListaUsuariosContainer table th,
+        #adminListaUsuariosContainer table td {
+             border: 1px solid #d1d5db;
+        }
+
+
+    </style>
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" style="display: flex;">
+        <div class="login-modal-content">
+            <img id="loginModalLogo" src="https://i.postimg.cc/44h8WjRD/Sin-t-tulo-2.png" alt="Logo Juzgado" onerror="this.onerror=null;this.src='https://placehold.co/140x140/e9ebee/000000?text=Logo';">
+            <h3 class="juzgado-titulo">PRIMER JUZGADO DE POLICÍA LOCAL</h3>
+            <h4 class="juzgado-subtitulo">VIÑA DEL MAR</h4>
+            <form id="loginForm">
+                <input type="text" id="rutUsuario" placeholder="Usuario (RUT)" required>
+                <input type="password" id="claveUsuario" placeholder="Clave" required>
+                <button type="submit">Ingresar</button>
+                <div id="loginErrorMessage"></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="sidebar" style="display: none;">
+        <div class="logo-container">
+            <img id="sidebar-logo" src="https://i.postimg.cc/44h8WjRD/Sin-t-tulo-2.png" alt="Logo Juzgado" onerror="this.onerror=null;this.src='https://placehold.co/120x120/EAEAEA/333333?text=Logo';">
+        </div>
+        <h2>Menú Principal</h2>
+        <ul>
+            <li id="menuCaratulasJPL" onclick="mostrarContenido('vistaCaratulas', this)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/></svg>
+                CARÁTULAS JPL
+            </li>
+            <li id="menuSernac" onclick="mostrarContenido('vistaCausasSernac', this)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" d="M3.75 4.5a.75.75 0 01.75-.75h15a.75.75 0 01.75.75v15a.75.75 0 01-.75-.75h-15a.75.75 0 01-.75-.75V4.5zm.75 4.75A.75.75 0 015.25 9h13.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zm0 3.5A.75.75 0 015.25 13h13.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zm0 3.5A.75.75 0 015.25 17h13.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+                </svg>
+                CAUSAS SERNAC
+            </li>
+            <li id="menuListadoSernac" class="hidden" onclick="mostrarContenido('vistaListadoSernac', this)">
+                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 3h18v2H3V3zm0 4h18v2H3V7zm0 4h18v2H3v-2zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
+                </svg>
+                LISTADO SERNAC
+            </li>
+            <li id="menuListadoCaratulas" class="hidden" onclick="mostrarContenido('vistaListadoCaratulasJPL', this)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H7c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H7V5h10v14zM15 7H9v2h6V7zm0 4H9v2h6v-2zm-3 4H9v2h3v-2z"/></svg>
+                LISTADO CARÁTULAS JPL
+            </li>
+            <li id="menuAdmin" class="hidden" onclick="mostrarContenido('vistaAdmin', this)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.946 1.548A11.23 11.23 0 005.133 5.133a11.181 11.181 0 00-2.827-.645A1.94 1.94 0 00.75 6.439c0 .814.505 1.519.942 1.826.16.12.324.232.496.333A11.23 11.23 0 004.03 9.69a11.182 11.182 0 00-.645 2.827 1.94 1.94 0 001.946 2.23c.814 0 1.519-.505 1.826-.942a11.242 11.242 0 001.607-1.918 11.18 11.18 0 002.827.645 1.94 1.94 0 002.23-1.946c0-.814-.505-1.519-.942-1.826a11.242 11.242 0 00-1.607-1.918 11.18 11.18 0 00.645-2.827M12 15.75a3.75 3.75 0 100-7.5 3.75 3.75 0 000 7.5z" clip-rule="evenodd" />
+                    <path d="M16.085 4.454a13.233 13.233 0 011.484 1.483c.1.162.21.32.325.482.122.172.25.341.372.514a1.94 1.94 0 01.75 1.19c0 .814-.505 1.519-.942 1.826-.16.12.324.232.496.333a11.23 11.23 0 01-2.228 1.238 11.18 11.18 0 01-.645 2.827 1.94 1.94 0 01-1.946 2.23c-.814 0-1.519-.505-1.826-.942a11.23 11.23 0 01-1.918-1.607 11.182 11.182 0 01-2.827.645 1.94 1.94 0 01-2.23-1.946c0-.814.505-1.519.942-1.826.16-.12.324.232.496.333A11.23 11.23 0 017.97 9.69a11.181 11.181 0 01-.645-2.827 1.94 1.94 0 011.946-2.23c.814 0 1.519.505 1.826.942.3.422.628.817.98 1.18a11.182 11.182 0 012.827-.645 1.94 1.94 0 012.23 1.946c0 .349-.122.683-.326.952a11.238 11.238 0 01-.82 1.056A13.233 13.233 0 0016.085 4.454z" />
+                </svg>
+                ADMINISTRACIÓN
+            </li>
+        </ul>
+    </div>
+
+    <div id="main-content" style="display: none;">
+        <!-- Views will be dynamically populated from templates -->
+        <div id="vistaCaratulas" class="vista-contenido"></div>
+        <div id="vistaListadoCaratulasJPL" class="vista-contenido"></div>
+        <div id="vistaCausasSernac" class="vista-contenido"></div>
+        <div id="vistaListadoSernac" class="vista-contenido"></div>
+        <div id="vistaAdmin" class="vista-contenido"></div>
+    </div>
+
+    <!-- SERNAC Custom Modal -->
+    <div id="customModalSernac" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="modal-content bg-white rounded-lg shadow-xl p-6 w-full max-w-md transform scale-95 transition-transform duration-300">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalTitleSernac" class="text-xl font-semibold text-gray-800">Mensaje</h3>
+                <button id="closeModalButtonSernac" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <p id="modalMessageSernac" class="text-gray-700"></p>
+            <div class="mt-6 text-right">
+                <button id="modalOkButtonSernac" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- All view content is now in templates to be injected after login -->
+    <template id="templateVistaCaratulas">
+        <div class="container">
+            <h1 class="jpl-view-title">NUEVA CARÁTULA JPL</h1>
+            <form id="formCaratulaJPL">
+                <!-- Content will be injected by JS -->
+            </form>
+        </div>
+    </template>
+    <template id="templateFormCaratulaJPL">
+        <div class="form-section">
+            <h2>DATOS DE LA CAUSA</h2>
+            <div class="field-group">
+                <label for="jplCaratulaRol">ROL N°:</label>
+                <input type="text" id="jplCaratulaRol" name="jplCaratulaRol" placeholder="EJ: 1583-2025">
+            </div>
+            <div class="field-group">
+                <label for="jplCaratulaTipoJuez">TIPO JUEZ:</label>
+                <select id="jplCaratulaTipoJuez" name="jplCaratulaTipoJuez" onchange="actualizarNombreJuez()">
+                    <option value="">SELECCIONE TIPO DE JUEZ</option>
+                    <option value="titular">JUEZ TITULAR</option>
+                    <option value="subrogante">JUEZ SUBROGANTE</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label for="jplCaratulaJuez">NOMBRE JUEZ:</label>
+                <input type="text" id="jplCaratulaJuez" name="jplCaratulaJuez" placeholder="NOMBRE DEL JUEZ">
+            </div>
+            <div class="field-group">
+                <label for="jplCaratulaTipoSecretario">TIPO SECRETARIO:</label>
+                <select id="jplCaratulaTipoSecretario" name="jplCaratulaTipoSecretario" onchange="actualizarNombreSecretario()">
+                    <option value="">SELECCIONE TIPO DE SECRETARIO</option>
+                    <option value="abogado">SECRETARIO ABOGADO</option>
+                    <option value="subrogante_sec">SECRETARIO SUBROGANTE</option>
+                    <option value="adhoc">SECRETARIO AD-HOC</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label for="jplCaratulaSecretario">NOMBRE SECRETARIO ABOGADO:</label>
+                <input type="text" id="jplCaratulaSecretario" name="jplCaratulaSecretario" placeholder="NOMBRE DEL SECRETARIO">
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h2>CARATULADO</h2>
+            <p style="font-size: 0.85em; color: #555; margin-bottom: 10px; text-transform:none;">(Nombres principales que aparecerán en la sección "PARTES: ... CON ...")</p>
+            <div id="contenedorJplCaratuladoParte1">
+            </div>
+            <button type="button" class="add-btn" onclick="agregarCaratulaJPLParteSimple('1')">+ AGREGAR NOMBRE PARTE 1</button>
+            
+            <div style="margin-top:20px;"></div>
+
+            <div id="contenedorJplCaratuladoParte2">
+            </div>
+            <button type="button" class="add-btn" onclick="agregarCaratulaJPLParteSimple('2')">+ AGREGAR NOMBRE PARTE 2</button>
+        </div>
+
+        <div class="form-section">
+            <h2>DETALLE DE PARTES (PARA EL CUERPO DEL PDF)</h2>
+            <p style="font-size: 0.85em; color: #555; margin-bottom: 10px; text-transform:none;">(Información completa de cada interviniente que se listará detalladamente).</p>
+            
+            <div>
+                <h3>DENUNCIANTES</h3>
+                <div id="contenedorJplDenunciantes">
+                </div>
+                <button type="button" class="add-btn" onclick="agregarParteDetallada('denunciante')">+ AGREGAR DENUNCIANTE</button>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h3>DENUNCIADOS</h3>
+                <div id="contenedorJplDenunciados">
+                </div>
+                <button type="button" class="add-btn" onclick="agregarParteDetallada('denunciado')">+ AGREGAR DENUNCIADO</button>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>OTROS DETALLES</h2>
+            <div class="field-group">
+                <label for="jplCaratulaMateria">MATERIA:</label>
+                <input type="text" id="jplCaratulaMateria" name="jplCaratulaMateria" placeholder="EJ: LEY DE SEGURIDAD PRIVADA">
+            </div>
+            <div class="field-group">
+                <label for="jplCaratulaFechaInicio">FECHA INICIADA:</label>
+                <input type="text" id="jplCaratulaFechaInicio" name="jplCaratulaFechaInicio" placeholder="EJ: 03 DE FEBRERO DE 2025">
+            </div>
+            <div class="field-group">
+                <label for="jplCaratulaActuario">ACTUARIO:</label>
+                <input type="text" id="jplCaratulaActuario" name="jplCaratulaActuario" placeholder="NOMBRE DEL ACTUARIO">
+            </div>
+        </div>
+        
+        <button type="button" class="main-generate-btn" id="btnGenerarActualizarPDF" onclick="procesarYGenerarPDFCaratulaJPL()">Generar PDF y Guardar</button>
+        <button type="button" class="add-btn" id="btnCancelarEdicion" style="display:none; background-color: #757575;" onclick="cancelarEdicion()">Cancelar Edición</button>
+    </template>
+    
+    <template id="templateVistaListadoCaratulasJPL">
+         <div class="container">
+            <h1 class="jpl-view-title">LISTADO CARÁTULAS JPL</h1>
+            <div id="lista-caratulas-guardadas-container">
+            </div>
+             <p id="no-caratulas-mensaje" style="display:none;">No hay carátulas guardadas.</p>
+        </div>
+    </template>
+
+    <template id="templateVistaCausasSernac">
+        <div id="viewCausasSernacContainer" class="bg-white p-6 md:p-8 rounded-xl shadow-2xl w-full max-w-3xl mx-auto">
+            <h1 class="text-2xl md:text-3xl font-bold text-center text-indigo-700 mb-8">Ingresar Nueva Causa SERNAC</h1>
+            <div id="templateSelectionSection" class="mb-6">
+                <label for="templateSelector" class="block text-lg font-semibold text-gray-700 mb-2">1. Selecciona el tipo de documento a rellenar:</label>
+                <select id="templateSelector" class="block w-full px-3 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">-- Elige un tipo de documento --</option>
+                    <option value="sentencias_sernac">Causas Sentencias SERNAC</option>
+                    <option value="iniciadas_sernac">Causas Iniciadas SERNAC</option>
+                </select>
+            </div>
+            <div id="formSection" class="hidden mb-6">
+                <h2 id="formTitle" class="text-xl font-semibold text-gray-700 mb-4">2. Completa los datos para la nueva fila:</h2>
+                <form id="dataForm" class="space-y-4"></form>
+            </div>
+            <div id="actionButtonSection" class="hidden text-center">
+                <button id="addDataButton" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-150 ease-in-out text-lg">
+                    Agregar Datos
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <template id="templateVistaListadoSernac">
+        <div id="viewListadoSernacContainer" class="bg-white p-6 md:p-8 rounded-xl shadow-2xl w-full mx-auto">
+            <h1 class="text-2xl md:text-3xl font-bold text-center text-indigo-700 mb-8">Listado de Causas SERNAC Agregadas</h1>
+            <div class="mb-6">
+                <label for="sernacListadoTypeSelector" class="block text-lg font-semibold text-gray-700 mb-2">Ver listado de:</label>
+                <select id="sernacListadoTypeSelector" class="block w-full md:w-1/2 lg:w-1/3 px-3 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="">-- Seleccione un tipo de listado --</option>
+                    <option value="sentencias_sernac_list">Causas con Sentencias</option>
+                    <option value="iniciadas_sernac_list">Causas Iniciadas</option>
+                </select>
+            </div>
+
+            <button id="exportListadoButton" class="mb-6 w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded transition duration-200">
+                Exportar Listado Completo a Excel
+            </button>
+            <div id="listadoContainerSernac" class="space-y-4">
+                <div id="listadoSentencias" class="table-responsive">
+                </div>
+                <div id="listadoIniciadas" class="table-responsive">
+                </div>
+                <p id="sernac-no-list-selected-mensaje" class="text-gray-500 msg-no-data text-center py-4">Seleccione un tipo de listado para ver las causas.</p>
+            </div>
+        </div>
+    </template>
+
+    <template id="templateVistaAdmin">
+        <div class="container mx-auto">
+            <h1 class="text-2xl md:text-3xl font-bold text-center text-indigo-700 mb-8">ADMINISTRACIÓN DE USUARIOS</h1>
+            
+            <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+                <h2 id="adminFormTitulo" class="text-xl font-semibold text-gray-700 mb-4">Crear Nuevo Usuario</h2>
+                <form id="adminUserForm" class="space-y-4">
+                    <div>
+                        <label for="adminUserName" class="block text-sm font-medium text-gray-700">Nombre de Usuario:</label>
+                        <input type="text" id="adminUserName" name="adminUserName" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
+                    <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+                        <div class="w-full sm:w-1/2">
+                            <label for="adminUserRut" class="block text-sm font-medium text-gray-700">RUT Usuario:</label>
+                            <input type="text" id="adminUserRut" name="adminUserRut" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                        <div class="w-full sm:w-1/2">
+                            <label for="adminUserClave" class="block text-sm font-medium text-gray-700">Clave:</label>
+                            <input type="password" id="adminUserClave" name="adminUserClave" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        </div>
+                    </div>
+                     <div>
+                        <label for="adminUserTipo" class="block text-sm font-medium text-gray-700">Tipo:</label>
+                        <select id="adminUserTipo" name="adminUserTipo" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="User">User</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                    <input type="hidden" id="adminEditUserId">
+                    <div class="flex space-x-4 pt-2">
+                        <button type="submit" id="adminGuardarUsuarioBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded">Guardar Usuario</button>
+                        <button type="button" id="adminCancelarEdicionUsuarioBtn" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-4 rounded hidden">Cancelar Edición</button>
+                    </div>
+                </form>
+            </div>
+
+            <div>
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Usuarios Registrados</h2>
+                <div id="adminListaUsuariosContainer" class="table-responsive">
+                     <p id="admin-no-users-mensaje" class="text-gray-500 text-center py-4">No hay usuarios registrados.</p>
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <template id="plantillaParte">
+        <div class="parte-block">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 class="tipoParteTitulo">Parte</h3>
+                <button type="button" class="remove-btn" onclick="eliminarParteDetallada(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20px" height="20px"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                </button>
+            </div>
+            <div class="field-group">
+                <label for="tipoParteInput_{parteIdUnica}">TIPO DE PARTE:</label>
+                <input type="text" id="tipoParteInput_{parteIdUnica}" name="tipoParteInput_{parteIdUnica}" placeholder="EJ: QUERELLANTE, DENUNCIADO" value="{tipoPredeterminado}">
+            </div>
+            <div class="field-group">
+                <label for="nombreParte_{parteIdUnica}">NOMBRE:</label>
+                <input type="text" id="nombreParte_{parteIdUnica}" name="nombreParte_{parteIdUnica}" value="">
+            </div>
+            <div class="field-group seccionCorreo_{parteIdUnica}">
+                <label for="correoParte_{parteIdUnica}">CORREO ELECTRÓNICO:</label>
+                <input type="email" id="correoParte_{parteIdUnica}" name="correoParte_{parteIdUnica}" value="">
+            </div>
+            <div class="seccionRepresentanteLegalOpcional_{parteIdUnica}">
+                <button type="button" class="add-btn toggle-rep-legal-btn" onclick="toggleRepresentanteLegal(this, '{parteIdUnica}')">REPRESENTANTE LEGAL</button>
+                <div class="contenidoRepresentanteLegal_{parteIdUnica} hidden-field">
+                    <h4>Representante Legal</h4>
+                    <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
+                        <button type="button" class="remove-btn" onclick="quitarRepresentanteLegal(this, '{parteIdUnica}')">
+                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20px" height="20px"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        </button>
+                    </div>
+                    <div class="field-group">
+                        <label for="repLegalNombre_{parteIdUnica}">NOMBRE REP. LEGAL:</label>
+                        <input type="text" id="repLegalNombre_{parteIdUnica}" name="repLegalNombre_{parteIdUnica}" value="">
+                    </div>
+                    <div class="field-group seccionRepLegalRut_{parteIdUnica} hidden-field">
+                        <label for="repLegalRut_{parteIdUnica}">RUT REP. LEGAL:</label>
+                        <input type="text" id="repLegalRut_{parteIdUnica}" name="repLegalRut_{parteIdUnica}" value="">
+                    </div>
+                    <div class="field-group">
+                        <label for="repLegalCorreo_{parteIdUnica}">CORREO REP. LEGAL:</label>
+                        <input type="email" id="repLegalCorreo_{parteIdUnica}" name="repLegalCorreo_{parteIdUnica}" value="">
+                    </div>
+                </div>
+            </div>
+            <div class="seccionAbogados_{parteIdUnica}">
+                <div id="contenedorPatrocinantes_{parteIdUnica}" class="contenedorPatrocinantes" data-role="patrocinantes-container"></div>
+                <button type="button" class="add-btn botonAgregarPatrocinante_{parteIdUnica}" onclick="agregarPatrocinante('{parteIdUnica}', this.previousElementSibling)">+ ABOGADO</button>
+            </div>
+        </div>
+    </template>
+
+    <template id="plantillaAbogado">
+        <div class="abogado-block">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 class="tipoAbogadoTitulo">Abogado</h4>
+                <button type="button" class="remove-btn" onclick="this.closest('.abogado-block').remove()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20px" height="20px"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                </button>
+            </div>
+            <div class="field-group campoAbogadoNombre_{idUnicoAbogado}">
+                <label for="nombreAbogado_{idUnicoAbogado}">NOMBRE:</label>
+                <input type="text" id="nombreAbogado_{idUnicoAbogado}" name="nombreAbogado_{idUnicoAbogado}" value="">
+            </div>
+            <div class="field-group campoAbogadoCorreo_{idUnicoAbogado}">
+                <label for="correoAbogado_{idUnicoAbogado}">CORREO ELECTRÓNICO:</label>
+                <input type="email" id="correoAbogado_{idUnicoAbogado}" name="correoAbogado_{idUnicoAbogado}" value="">
+            </div>
+        </div>
+    </template>
+
+    <template id="plantillaCaratulaParteJPLSimple">
+        <div class="jpl-parte-item-simple">
+            <input type="text" name="jplCaratulaNombreParte{numParte}[]" placeholder="NOMBRE PARTE {numParte}">
+            <button type="button" class="remove-btn" onclick="this.parentElement.remove()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20px" height="20px"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            </button>
+        </div>
+    </template>
+
+    <template id="plantillaCaratulaGuardadaItem">
+        <div class="saved-caratula-item" data-id="{id}">
+            <div class="saved-caratula-info">
+                <span class="caratulado-display">{caratuladoCompleto}</span>
+                <strong>ROL N°:</strong><span>{rol}</span>
+                <strong>MATERIA:</strong><span>{materia}</span>
+                <strong>ACTUARIO:</strong><span>{actuario}</span>
+                <strong>CREADA:</strong><span>{fechaCreacion}</span>
+            </div>
+            <div class="saved-caratula-actions">
+                <button type="button" class="action-btn btn-view-pdf" title="Ver PDF">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 0 24 24" width="20px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H10v-2h8v2zm0-4H10V8h8v2zm-2-4H10V4h6v2zM8 16H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V6h2v2zm0-4H6V2c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14v-2H6V2z"/></svg>
+                </button>
+                <button type="button" class="action-btn btn-edit-caratula" title="Editar Carátula">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 0 24 24" width="20px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.26 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34a.39.39 0 0 0-.55 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                </button>
+                <button type="button" class="action-btn btn-delete-caratula" title="Eliminar Carátula">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 0 24 24" width="20px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                </button>
+            </div>
+        </div>
+    </template>
+    
+<script>
+    // --- SUPABASE CLIENT SETUP ---
+    // IMPORTANTE: Reemplaza con tus propias claves de Supabase.
+    const SUPABASE_URL = 'URL_DE_TU_PROYECTO_SUPABASE'; // <-- PEGA TU URL AQUÍ
+    const SUPABASE_ANON_KEY = 'TU_CLAVE_ANON_AQUÍ'; // <-- PEGA TU CLAVE ANON AQUÍ
+
+    let supabaseClient;
+    const { createClient } = supabase;
+
+    // This check prevents the app from crashing if Supabase keys are not set.
+    if (SUPABASE_URL === 'URL_DE_TU_PROYECTO_SUPABASE' || SUPABASE_ANON_KEY === 'TU_CLAVE_ANON_AQUÍ') {
+        document.body.innerHTML = `
+            <div style="padding: 40px; text-align: center; font-family: sans-serif; background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; margin: 20px; border-radius: 8px;">
+                <h1>Error de Configuración</h1>
+                <p>No has configurado las claves de Supabase. Por favor, edita este documento y reemplaza los valores de <code>SUPABASE_URL</code> y <code>SUPABASE_ANON_KEY</code> con tus credenciales.</p>
+                <p>Puedes encontrar estas claves en la sección 'API' de la configuración de tu proyecto en Supabase.</p>
+            </div>
+        `;
+        throw new Error("Supabase URL and Key are not configured. Please edit the script and replace the placeholder values.");
+    } else {
+        supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+
+    // --- GLOBAL STATE & CONSTANTS ---
+    let idDenuncianteGlobalCounter = 0;
+    let idDenunciadoGlobalCounter = 0;
+    const abogadoCountersJPL = {};
+    let jplCaratuladoParte1Counter = 0;
+    let jplCaratuladoParte2Counter = 0;
+    let currentEditingCaratulaId = null;
+    let currentUser = null;
+
+    let sernac_currentFieldsDefinition = [];
+    let sernac_currentFileNameBase = '';
+    let sernac_currentTemplateKey = '';
+    let adminEditingUserId = null;
+
+
+    // --- INITIALIZATION ---
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeLogin();
+    });
+
+    async function initializeAppComponents() {
+        // Populate view containers with their templates first
+        document.getElementById('vistaCaratulas').innerHTML = document.getElementById('templateVistaCaratulas').innerHTML;
+        document.getElementById('vistaListadoCaratulasJPL').innerHTML = document.getElementById('templateVistaListadoCaratulasJPL').innerHTML;
+        document.getElementById('vistaCausasSernac').innerHTML = document.getElementById('templateVistaCausasSernac').innerHTML;
+        document.getElementById('vistaListadoSernac').innerHTML = document.getElementById('templateVistaListadoSernac').innerHTML;
+        document.getElementById('vistaAdmin').innerHTML = document.getElementById('templateVistaAdmin').innerHTML;
+
+        // Initialize JPL part
+        setDefaultFormValues();
+        await cargarYRenderizarCaratulasGuardadas(); 
+        
+        // Setup UI based on user role
+        updateMenuVisibility();
+
+        // Attach event listeners
+        setupEventListeners();
+        
+        // Show the default view
+        const firstVisibleMenuItem = document.querySelector("#sidebar ul li:not(.hidden)");
+        if (firstVisibleMenuItem) {
+            firstVisibleMenuItem.click();
+        }
+    }
+    
+    function setupEventListeners() {
+        const sernac_templateSelector = document.getElementById('templateSelector');
+        const sernac_addDataButton = document.getElementById('addDataButton');
+        const sernac_exportListadoButton = document.getElementById('exportListadoButton');
+        const sernac_closeModalButton = document.getElementById('closeModalButtonSernac');
+        const sernac_modalOkButton = document.getElementById('modalOkButtonSernac');
+        const sernac_customModal = document.getElementById('customModalSernac');
+        const sernacListadoTypeSelector = document.getElementById('sernacListadoTypeSelector');
+        const adminUserForm = document.getElementById('adminUserForm');
+        const adminCancelarEdicionUsuarioBtn = document.getElementById('adminCancelarEdicionUsuarioBtn');
+
+        if (sernac_templateSelector) {
+            sernac_templateSelector.addEventListener('change', (event) => {
+                sernac_currentTemplateKey = event.target.value;
+                sernac_resetFormAndButton();
+                if (!sernac_currentTemplateKey) {
+                    sernac_currentFieldsDefinition = []; sernac_currentFileNameBase = ''; return;
+                }
+                const definition = TEMPLATE_DEFINITIONS_SERNAC[sernac_currentTemplateKey];
+                if (!definition || !definition.fields) {
+                    sernac_showModal('Error Interno', `No se encontró la definición de campos para "${sernac_currentTemplateKey}".`);
+                    return;
+                }
+                sernac_currentFieldsDefinition = definition.fields;
+                sernac_currentFileNameBase = definition.fileNameBase;
+                document.getElementById('formTitle').textContent = `2. Completa los datos para: ${definition.displayName}`;
+                sernac_createForm(sernac_currentFieldsDefinition);
+                document.getElementById('formSection').classList.remove('hidden');
+                document.getElementById('actionButtonSection').classList.remove('hidden');
+            });
+        }
+
+        if (sernac_addDataButton) {
+            sernac_addDataButton.addEventListener('click', handleAddSernacData);
+        }
+        
+        if (sernacListadoTypeSelector) {
+            sernacListadoTypeSelector.addEventListener('change', sernac_renderListado);
+        }
+
+        if (sernac_closeModalButton) sernac_closeModalButton.addEventListener('click', sernac_hideModal);
+        if (sernac_modalOkButton) sernac_modalOkButton.addEventListener('click', sernac_hideModal);
+        if (sernac_customModal) {
+            sernac_customModal.addEventListener('click', (event) => {
+                if (event.target === sernac_customModal) sernac_hideModal();
+            });
+        }
+        if (sernac_exportListadoButton) {
+            sernac_exportListadoButton.addEventListener('click', sernac_exportToExcel);
+        }
+
+        if (adminUserForm) {
+            adminUserForm.addEventListener('submit', handleAdminUserFormSubmit);
+        }
+        if (adminCancelarEdicionUsuarioBtn) {
+            adminCancelarEdicionUsuarioBtn.addEventListener('click', adminCancelUserEdit);
+        }
+    }
+    
+    // --- LOGIN & AUTH SYSTEM using Supabase ---
+    function initializeLogin() {
+        const loginModal = document.getElementById('loginModal');
+        const loginForm = document.getElementById('loginForm');
+        const rutUsuarioInput = document.getElementById('rutUsuario');
+        
+        loginModal.style.display = 'flex';
+
+        loginForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const rutInput = document.getElementById('rutUsuario');
+            const claveInput = document.getElementById('claveUsuario');
+            const errorMessageDiv = document.getElementById('loginErrorMessage');
+            
+            const rut = formatRut(rutInput.value.trim());
+            rutInput.value = rut; 
+            const email = `${rut.replace(/\./g, '').replace(/-/g, '')}@jpl.local`; // Create a fake email from RUT
+            const password = claveInput.value;
+
+            if (!validateRut(rut)) {
+                errorMessageDiv.textContent = 'RUT inválido. Formato: XX.XXX.XXX-X o XXXXXXXX-X';
+                return;
+            }
+
+            const { data: { user }, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                errorMessageDiv.textContent = 'Usuario o clave incorrectos.';
+                console.error('Login Error:', error.message);
+                return;
+            }
+
+            if (user) {
+                const { data: perfil, error: perfilError } = await supabaseClient
+                    .from('perfiles')
+                    .select('tipo')
+                    .eq('id', user.id)
+                    .single();
+                
+                if (perfilError) {
+                    errorMessageDiv.textContent = 'No se pudo obtener el perfil del usuario.';
+                    console.error('Profile fetch error:', perfilError.message);
+                    return;
+                }
+
+                currentUser = { id: user.id, rut: rut, tipo: perfil.tipo };
+                
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('sidebar').style.display = 'flex';
+                document.getElementById('main-content').style.display = 'block';
+                
+                await initializeAppComponents();
+                errorMessageDiv.textContent = '';
+            }
+        });
+
+        if (rutUsuarioInput) {
+            rutUsuarioInput.addEventListener('input', (e) => {
+                e.target.value = formatRutOnInput(e.target.value);
+            });
+        }
+    }
+
+    function updateMenuVisibility() {
+        if (!currentUser) return;
+        
+        const isAdmin = currentUser.tipo === 'Admin';
+
+        document.getElementById('menuListadoSernac').style.display = isAdmin ? 'flex' : 'none';
+        document.getElementById('menuListadoCaratulas').style.display = isAdmin ? 'flex' : 'none';
+        document.getElementById('menuAdmin').style.display = isAdmin ? 'flex' : 'none';
+    }
+
+    // --- RUT Formatting and Validation ---
+    function validateRut(rut) {
+        if (!/^[0-9]+[-|‐]{1}[0-9kK]{1}$/.test(rut) && !/^[0-9.]+[-|‐]{1}[0-9kK]{1}$/.test(rut)) return false;
+        rut = rut.replace(/\./g, '').replace('-', '');
+        const dv = rut.slice(-1).toUpperCase();
+        const numero = parseInt(rut.slice(0, -1), 10);
+        if (isNaN(numero)) return false;
+        let M = 0, S = 1;
+        for (let T = numero; T; T = Math.floor(T / 10)) S = (S + T % 10 * (9 - M++ % 6)) % 11;
+        return (S ? S - 1 + '' : 'K') === dv;
+    }
+
+    function formatRut(rut) {
+        rut = rut.replace(/[^\dkK]/g, '').toUpperCase();
+        let numero = rut.slice(0, -1);
+        const dv = rut.slice(-1);
+        if (!numero || !dv && rut.length > 1) return rut;
+        if (rut.length <= 1) return rut;
+        numero = numero.replace(/\./g, '');
+        let formattedNumero = "";
+        for (let i = numero.length - 1, j = 0; i >= 0; i--, j++) {
+            if (j > 0 && j % 3 === 0) formattedNumero = "." + formattedNumero;
+            formattedNumero = numero[i] + formattedNumero;
+        }
+        return formattedNumero + "-" + dv;
+    }
+    
+    function formatRutOnInput(value) {
+        let rut = value.replace(/[^\dkK.-]/g, '').toUpperCase();
+        let cleanRut = rut.replace(/\./g, '').replace(/-/g, '');
+        let dv = '';
+        let numberPart = cleanRut;
+        if (cleanRut.length > 1) {
+            dv = cleanRut.slice(-1);
+            numberPart = cleanRut.substring(0, cleanRut.length - 1);
+        }
+        let formattedNumber = "";
+        for (let i = numberPart.length - 1, j = 0; i >= 0; i--, j++) {
+            if (j > 0 && j % 3 === 0) formattedNumber = "." + formattedNumber;
+            formattedNumber = numberPart.charAt(i) + formattedNumber;
+        }
+        return formattedNumber + (dv ? "-" + dv : (numberPart.length > 0 && value.includes('-') ? "-" : ""));
+    }
+
+    function mostrarContenido(idVista, menuItem) {
+        document.querySelectorAll('.vista-contenido').forEach(vista => vista.classList.remove('active'));
+        document.querySelectorAll('#sidebar ul li').forEach(item => item.classList.remove('active'));
+        document.getElementById(idVista).classList.add('active');
+        menuItem.classList.add('active');
+    
+        if (idVista === 'vistaListadoCaratulasJPL') cargarYRenderizarCaratulasGuardadas();
+        if (idVista === 'vistaListadoSernac') sernac_renderListado();
+        if (idVista === 'vistaAdmin') renderAdminUserList();
+    }
+    
+    // --- JPL FUNCTIONS (Caratulas) ---
+    function setDefaultFormValues(isFullReset = true) {
+        const formContainer = document.getElementById('formCaratulaJPL');
+        if(!formContainer) return;
+        if (isFullReset) formContainer.innerHTML = document.getElementById('templateFormCaratulaJPL').innerHTML;
+
+        jplCaratuladoParte1Counter = 0;
+        jplCaratuladoParte2Counter = 0;
+        idDenuncianteGlobalCounter = 0;
+        idDenunciadoGlobalCounter = 0;
+        Object.keys(abogadoCountersJPL).forEach(key => delete abogadoCountersJPL[key]);
+
+        agregarCaratulaJPLParteSimple('1', true);
+        agregarCaratulaJPLParteSimple('2', true);
+        
+        if (isFullReset) {
+            window.agregarParteDetallada('denunciante', { nombre: "DELEGACION PRESIDENCIAL REGIONAL DE VALPARAISO", tipo: "DENUNCIANTE" });
+            window.agregarParteDetallada('denunciado', { nombre: "APS SEGURIDAD SPA", tipo: "DENUNCIADO", abogados: [{ nombre: "MARCO ANTONIO OSSANDON", correo: "OSSANDONMARCO@YAHOO.ES" }] });
+        }
+
+        document.getElementById('jplCaratulaTipoJuez').value = 'titular';
+        actualizarNombreJuez();
+        document.getElementById('jplCaratulaTipoSecretario').value = 'abogado';
+        actualizarNombreSecretario();
+        document.getElementById('jplCaratulaRol').value = "1583-2025";
+        document.getElementById('jplCaratulaMateria').value = "LEY DE SEGURIDAD PRIVADA";
+        document.getElementById('jplCaratulaFechaInicio').value = "03 DE FEBRERO DE 2025";
+        document.getElementById('jplCaratulaActuario').value = "JUAN PEREZ";
+
+        document.getElementById('btnGenerarActualizarPDF').textContent = 'Generar PDF y Guardar';
+        document.getElementById('btnCancelarEdicion').style.display = 'none';
+        currentEditingCaratulaId = null;
+    }
+    
+    function recopilarDatosFormularioJPL() {
+        const caratulaData = {
+            id: currentEditingCaratulaId || undefined,
+            user_id: currentUser.id,
+            rol: getValueById('jplCaratulaRol'),
+            juez_tipo: document.getElementById('jplCaratulaTipoJuez').value,
+            juez_nombre: getValueById('jplCaratulaJuez'),
+            secretario_tipo: document.getElementById('jplCaratulaTipoSecretario').value,
+            secretario_nombre: getValueById('jplCaratulaSecretario'),
+            caratulado_parte1_nombres: [],
+            caratulado_parte2_nombres: [],
+            denunciantes: [],
+            denunciados: [],
+            materia: getValueById('jplCaratulaMateria'),
+            fecha_inicio: getValueById('jplCaratulaFechaInicio'),
+            actuario: getValueById('jplCaratulaActuario'),
+        };
+
+        document.querySelectorAll('#contenedorJplCaratuladoParte1 input').forEach(input => {
+            if (input.value.trim()) caratulaData.caratulado_parte1_nombres.push(input.value.trim().toUpperCase());
+        });
+        document.querySelectorAll('#contenedorJplCaratuladoParte2 input').forEach(input => {
+            if (input.value.trim()) caratulaData.caratulado_parte2_nombres.push(input.value.trim().toUpperCase());
+        });
+
+        const recopilarDetallesParte = (parteBlockNode) => {
+            const parteId = parteBlockNode.id.replace('block_', '');
+            const detalle = {
+                tipoParteManual: getValueById(`tipoParteInput_${parteId}`),
+                nombre: getValueById(`nombreParte_${parteId}`),
+                correo: getValueById(`correoParte_${parteId}`),
+                representanteLegal: null,
+                abogados: []
+            };
+            const repLegalContent = document.querySelector(`.contenidoRepresentanteLegal_${parteId}`);
+            if (repLegalContent && !repLegalContent.classList.contains('hidden-field')) {
+                detalle.representanteLegal = {
+                    nombre: getValueById(`repLegalNombre_${parteId}`),
+                    correo: getValueById(`repLegalCorreo_${parteId}`)
+                };
+            }
+            parteBlockNode.querySelectorAll(`#contenedorPatrocinantes_${parteId} .abogado-block`).forEach(abogadoBlockEl => {
+                const abogadoIdOriginal = abogadoBlockEl.id.replace('block_abogado_', '');
+                detalle.abogados.push({
+                    nombre: getValueById(`nombreAbogado_${abogadoIdOriginal}`),
+                    correo: getValueById(`correoAbogado_${abogadoIdOriginal}`)
+                });
+            });
+            return detalle;
+        };
+
+        document.querySelectorAll('#contenedorJplDenunciantes .parte-block').forEach(pb => caratulaData.denunciantes.push(recopilarDetallesParte(pb)));
+        document.querySelectorAll('#contenedorJplDenunciados .parte-block').forEach(pb => caratulaData.denunciados.push(recopilarDetallesParte(pb)));
+        
+        return caratulaData;
+    }
+
+    async function procesarYGenerarPDFCaratulaJPL() {
+        const caratulaData = recopilarDatosFormularioJPL();
+        
+        let dbResponse;
+        if (currentEditingCaratulaId) {
+            const { data, error } = await supabaseClient.from('jpl_caratulas').update(caratulaData).eq('id', currentEditingCaratulaId).select().single();
+            dbResponse = { data, error };
+        } else {
+            const { data, error } = await supabaseClient.from('jpl_caratulas').insert(caratulaData).select().single();
+            dbResponse = { data, error };
+        }
+
+        if (dbResponse.error) {
+            console.error("Error guardando carátula en Supabase:", dbResponse.error);
+            sernac_showModal("Error de Base de Datos", "No se pudo guardar la carátula. Revise la consola para más detalles.");
+            return;
+        }
+
+        const doc = generarPDF(dbResponse.data); // Generate PDF with data from DB
+        doc.save(`Caratula_JPL_${dbResponse.data.rol || 'SIN_ROL'}.pdf`);
+        
+        sernac_showModal("Éxito", "La carátula ha sido guardada y el PDF generado.");
+        cancelarEdicion();
+        await cargarYRenderizarCaratulasGuardadas();
+    }
+    
+    function cancelarEdicion() {
+        currentEditingCaratulaId = null;
+        setDefaultFormValues();
+    }
+
+    async function cargarYRenderizarCaratulasGuardadas() {
+        const { data: caratulas, error } = await supabaseClient
+            .from('jpl_caratulas')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error("Error cargando carátulas:", error);
+            return;
+        }
+
+        const container = document.getElementById('lista-caratulas-guardadas-container');
+        const noCaratulasMsg = document.getElementById('no-caratulas-mensaje');
+        container.innerHTML = '';
+
+        if (caratulas.length === 0) {
+            noCaratulasMsg.style.display = 'block';
+            return;
+        }
+        noCaratulasMsg.style.display = 'none';
+
+        const templateNode = document.getElementById('plantillaCaratulaGuardadaItem');
+        
+        caratulas.forEach(caratula => {
+            const clone = templateNode.content.cloneNode(true);
+            const itemDiv = clone.querySelector('.saved-caratula-item');
+            itemDiv.dataset.id = caratula.id;
+
+            const caratuladoParte1Str = (caratula.caratulado_parte1_nombres || []).join(' Y ');
+            const caratuladoParte2Str = (caratula.caratulado_parte2_nombres || []).join(' Y ');
+            const caratuladoCompleto = `${caratuladoParte1Str} CON ${caratuladoParte2Str}`;
+            const fechaFormateada = new Date(caratula.created_at).toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+            itemDiv.querySelector('.caratulado-display').textContent = caratuladoCompleto || 'N/A';
+            itemDiv.querySelector('strong:nth-of-type(2) + span').textContent = caratula.rol || 'N/A';
+            itemDiv.querySelector('strong:nth-of-type(3) + span').textContent = caratula.materia || 'N/A';
+            itemDiv.querySelector('strong:nth-of-type(4) + span').textContent = caratula.actuario || 'N/A';
+            itemDiv.querySelector('strong:nth-of-type(5) + span').textContent = fechaFormateada;
+            
+            itemDiv.querySelector('.btn-view-pdf').addEventListener('click', () => generarYDescargarPDFGuardado(caratula.id));
+            itemDiv.querySelector('.btn-edit-caratula').addEventListener('click', () => iniciarEdicionCaratula(caratula.id));
+            itemDiv.querySelector('.btn-delete-caratula').addEventListener('click', () => eliminarCaratula(caratula.id));
+            
+            container.appendChild(itemDiv);
+        });
+    }
+
+    async function generarYDescargarPDFGuardado(id) {
+        const { data: caratula, error } = await supabaseClient.from('jpl_caratulas').select('*').eq('id', id).single();
+        if (error || !caratula) {
+            console.error('Error al recuperar la carátula para el PDF:', error);
+            sernac_showModal("Error", "No se pudo recuperar la carátula para generar el PDF.");
+            return;
+        }
+        const doc = generarPDF(caratula);
+        doc.save(`Caratula_JPL_${caratula.rol || 'GUARDADA'}.pdf`);
+    }
+
+    async function eliminarCaratula(id) {
+        if (!confirm('¿Está seguro de que desea eliminar esta carátula JPL? Esta acción no se puede deshacer.')) return;
+        
+        const { error } = await supabaseClient.from('jpl_caratulas').delete().eq('id', id);
+        if (error) {
+            console.error("Error eliminando carátula:", error);
+            sernac_showModal("Error", "No se pudo eliminar la carátula.");
+        } else {
+            sernac_showModal("Éxito", "Carátula eliminada.");
+            await cargarYRenderizarCaratulasGuardadas();
+        }
+    }
+
+    async function iniciarEdicionCaratula(id) {
+        const { data: caratulaAEditar, error } = await supabaseClient.from('jpl_caratulas').select('*').eq('id', id).single();
+        if (error || !caratulaAEditar) {
+            console.error('Error al buscar carátula para editar:', error);
+            sernac_showModal("Error", "Carátula no encontrada para editar.");
+            return;
+        }
+
+        currentEditingCaratulaId = id;
+        setDefaultFormValues(true);
+        
+        document.getElementById('jplCaratulaRol').value = caratulaAEditar.rol || '';
+        document.getElementById('jplCaratulaTipoJuez').value = caratulaAEditar.juez_tipo || '';
+        actualizarNombreJuez();
+        document.getElementById('jplCaratulaJuez').value = caratulaAEditar.juez_nombre || '';
+        
+        document.getElementById('jplCaratulaTipoSecretario').value = caratulaAEditar.secretario_tipo || '';
+        actualizarNombreSecretario();
+        document.getElementById('jplCaratulaSecretario').value = caratulaAEditar.secretario_nombre || '';
+
+        document.getElementById('jplCaratulaMateria').value = caratulaAEditar.materia || '';
+        document.getElementById('jplCaratulaFechaInicio').value = caratulaAEditar.fecha_inicio || '';
+        document.getElementById('jplCaratulaActuario').value = caratulaAEditar.actuario || '';
+
+        (caratulaAEditar.caratulado_parte1_nombres || []).forEach((nombre, index) => {
+            if (index > 0) agregarCaratulaJPLParteSimple('1');
+            document.querySelectorAll('#contenedorJplCaratuladoParte1 input')[index].value = nombre;
+        });
+        (caratulaAEditar.caratulado_parte2_nombres || []).forEach((nombre, index) => {
+            if (index > 0) agregarCaratulaJPLParteSimple('2');
+            document.querySelectorAll('#contenedorJplCaratuladoParte2 input')[index].value = nombre;
+        });
+
+        (caratulaAEditar.denunciantes || []).forEach(d => agregarParteDetallada('denunciante', d));
+        (caratulaAEditar.denunciados || []).forEach(d => agregarParteDetallada('denunciado', d));
+        
+        document.querySelector('.jpl-view-title').textContent = 'EDITANDO CARÁTULA JPL';
+        document.getElementById('btnGenerarActualizarPDF').textContent = 'Actualizar PDF y Guardar Cambios';
+        document.getElementById('btnCancelarEdicion').style.display = 'inline-block';
+
+        mostrarContenido('vistaCaratulas', document.getElementById('menuCaratulasJPL'));
+    }
+    
+    // --- UTILITY & HELPER Functions for JPL ---
+    function getValueById(id) {
+        const element = document.getElementById(id);
+        return element ? (element.value.trim()).toUpperCase() : '';
+    }
+    
+    function actualizarNombreJuez() {
+        const tipoJuezSelect = document.getElementById('jplCaratulaTipoJuez');
+        const nombreJuezInput = document.getElementById('jplCaratulaJuez');
+        if (!tipoJuezSelect || !nombreJuezInput) return;
+        const tipoSeleccionado = tipoJuezSelect.value;
+        const isCurrentlyEditingThisField = currentEditingCaratulaId && document.activeElement === nombreJuezInput;
+        if (!isCurrentlyEditingThisField || nombreJuezInput.value === "") {
+            if (tipoSeleccionado === 'titular') {
+                nombreJuezInput.value = "JULIO REYES MADARIAGA";
+                nombreJuezInput.readOnly = true;
+            } else if (tipoSeleccionado === 'subrogante') {
+                nombreJuezInput.value = "DANIEL DIAZ GAETE";
+                nombreJuezInput.readOnly = true;
+            } else {
+                if(tipoSeleccionado === "") nombreJuezInput.value = "";
+                nombreJuezInput.readOnly = false;
+            }
+        } else {
+             nombreJuezInput.readOnly = (tipoSeleccionado === 'titular' || tipoSeleccionado === 'subrogante');
+        }
+    }
+
+    function actualizarNombreSecretario() {
+        const tipoSecretarioSelect = document.getElementById('jplCaratulaTipoSecretario');
+        const nombreSecretarioInput = document.getElementById('jplCaratulaSecretario');
+        if (!tipoSecretarioSelect || !nombreSecretarioInput) return;
+        const tipoSeleccionado = tipoSecretarioSelect.value;
+        const isCurrentlyEditingThisField = currentEditingCaratulaId && document.activeElement === nombreSecretarioInput;
+        if(!isCurrentlyEditingThisField || nombreSecretarioInput.value === "") {
+            if (tipoSeleccionado === 'abogado') {
+                nombreSecretarioInput.value = "DANIEL DIAZ GAETE";
+                nombreSecretarioInput.readOnly = true;
+            } else if (tipoSeleccionado === 'subrogante_sec') {
+                nombreSecretarioInput.value = "CAMILA ZUÑIGA CARRASCO";
+                nombreSecretarioInput.readOnly = true;
+            } else {
+                 if(tipoSeleccionado === "") nombreSecretarioInput.value = "";
+                nombreSecretarioInput.readOnly = false;
+                nombreSecretarioInput.placeholder = tipoSeleccionado === 'adhoc' ? "INGRESE NOMBRE SECRETARIO AD-HOC" : "NOMBRE DEL SECRETARIO";
+            }
+        } else {
+             nombreSecretarioInput.readOnly = (tipoSeleccionado === 'abogado' || tipoSeleccionado === 'subrogante_sec');
+             nombreSecretarioInput.placeholder = tipoSeleccionado === 'adhoc' ? "INGRESE NOMBRE SECRETARIO AD-HOC" : "NOMBRE DEL SECRETARIO";
+        }
+    }
+    
+    function crearBloqueParteDetallada(contexto, initialData = null) {
+        const template = document.getElementById('plantillaParte');
+        if (!template) return null;
+        
+        let currentGlobalIdCounter = contexto === 'denunciante' ? ++idDenuncianteGlobalCounter : ++idDenunciadoGlobalCounter;
+        const parteIdUnica = `${contexto}_${currentGlobalIdCounter}`;
+        
+        const tempDiv = document.createElement('div');
+        let htmlPlantilla = template.innerHTML;
+        const tipoPredeterminado = initialData?.tipoParteManual || (contexto === 'denunciante' ? "DENUNCIANTE" : "DENUNCIADO");
+        htmlPlantilla = htmlPlantilla.replace(/{parteIdUnica}/g, parteIdUnica).replace(/{tipoPredeterminado}/g, tipoPredeterminado.toUpperCase());
+        tempDiv.innerHTML = htmlPlantilla;
+        
+        const nuevoParteBlock = tempDiv.querySelector('.parte-block');
+        if (!nuevoParteBlock) return null;
+        nuevoParteBlock.dataset.contexto = contexto;
+        nuevoParteBlock.id = `block_${parteIdUnica}`;
+        nuevoParteBlock.querySelector('.tipoParteTitulo').textContent = `${contexto.toUpperCase()} ${currentGlobalIdCounter}`;
+
+        if (initialData) {
+            nuevoParteBlock.querySelector(`#nombreParte_${parteIdUnica}`).value = initialData.nombre?.toUpperCase() || '';
+            nuevoParteBlock.querySelector(`#correoParte_${parteIdUnica}`).value = initialData.correo?.toUpperCase() || '';
+            if (initialData.tipoParteManual) nuevoParteBlock.querySelector(`#tipoParteInput_${parteIdUnica}`).value = initialData.tipoParteManual.toUpperCase();
+            if (initialData.representanteLegal?.nombre) {
+                toggleRepresentanteLegal(nuevoParteBlock.querySelector(`.toggle-rep-legal-btn`), parteIdUnica);
+                nuevoParteBlock.querySelector(`#repLegalNombre_${parteIdUnica}`).value = initialData.representanteLegal.nombre.toUpperCase();
+                if (initialData.representanteLegal.correo) nuevoParteBlock.querySelector(`#repLegalCorreo_${parteIdUnica}`).value = initialData.representanteLegal.correo.toUpperCase();
+            }
+            if (initialData.abogados?.length > 0) {
+                const contenedorAbogados = nuevoParteBlock.querySelector(`#contenedorPatrocinantes_${parteIdUnica}`);
+                initialData.abogados.forEach(abogadoData => agregarAbogado(parteIdUnica, contenedorAbogados, true, abogadoData));
+            }
+        }
+        return nuevoParteBlock;
+    }
+    
+    function renumerarPartesDetalladas(contexto) {
+        const contenedor = document.getElementById(contexto === 'denunciante' ? 'contenedorJplDenunciantes' : 'contenedorJplDenunciados');
+        if (!contenedor) return;
+        const partes = contenedor.querySelectorAll('.parte-block');
+        partes.forEach((parte, index) => {
+            const tituloEl = parte.querySelector('.tipoParteTitulo');
+            if (tituloEl) tituloEl.textContent = `${contexto.toUpperCase()} ${index + 1}`;
+        });
+    }
+
+    window.agregarParteDetallada = function(contexto, initialData = null) {
+        const contenedorId = contexto === 'denunciante' ? 'contenedorJplDenunciantes' : 'contenedorJplDenunciados';
+        const contenedor = document.getElementById(contenedorId);
+        const nuevoBloque = crearBloqueParteDetallada(contexto, initialData);
+        if(contenedor && nuevoBloque) {
+            contenedor.appendChild(nuevoBloque);
+             renumerarPartesDetalladas(contexto);
+        }
+    }
+    
+    window.eliminarParteDetallada = function(botonEliminar) {
+        const parteBlock = botonEliminar.closest('.parte-block');
+        if (parteBlock) {
+            const contexto = parteBlock.dataset.contexto;
+            parteBlock.remove();
+            if (contexto) renumerarPartesDetalladas(contexto);
+        }
+    }
+
+    function toggleRepresentanteLegal(boton, idParteUnica) {
+        const contenidoRepLegal = document.querySelector(`.contenidoRepresentanteLegal_${parteIdUnica}`);
+        if (contenidoRepLegal) contenidoRepLegal.classList.toggle('hidden-field');
+    }
+
+    function quitarRepresentanteLegal(botonQuitar, idParteUnica) {
+        const contenidoRepLegal = document.querySelector(`.contenidoRepresentanteLegal_${parteIdUnica}`);
+        if(contenidoRepLegal) {
+            contenidoRepLegal.classList.add('hidden-field');
+            contenidoRepLegal.querySelectorAll('input').forEach(input => input.value = '');
+        }
+    }
+    
+    function agregarCaratulaJPLParteSimple(numParte, esInicial = false) {
+        const contenedor = document.getElementById(`contenedorJplCaratuladoParte${numParte}`);
+        const template = document.getElementById('plantillaCaratulaParteJPLSimple');
+        if (!template || !contenedor) return;
+        const clone = template.content.cloneNode(true);
+        const inputField = clone.querySelector('input');
+        if (!inputField) return;
+
+        inputField.name = `jplCaratulaNombreParte${numParte}[]`;
+        inputField.placeholder = `NOMBRE PARTE ${numParte}`;
+
+        if (esInicial) {
+            if (numParte === '1' && jplCaratuladoParte1Counter === 0) inputField.value = "DELEGACION PRESIDENCIAL REGIONAL DE VALPARAISO";
+            else if (numParte === '2' && jplCaratuladoParte2Counter === 0) inputField.value = "APS SEGURIDAD SPA.";
+        }
+        
+        contenedor.appendChild(clone);
+        if (numParte === '1') jplCaratuladoParte1Counter++;
+        else jplCaratuladoParte2Counter++;
+    }
+    
+    function agregarAbogado(idParteUnicaDeBloque, elContenedorAbogados, esPatrocinante = true, initialData = null) {
+        if (!elContenedorAbogados) return;
+        const template = document.getElementById('plantillaAbogado');
+        if(!template) return;
+        
+        const tipoAbogadoKey = `${idParteUnicaDeBloque}_abogados`;
+        abogadoCountersJPL[tipoAbogadoKey] = (abogadoCountersJPL[tipoAbogadoKey] || 0) + 1;
+        const idUnicoAbogadoFinal = `${idParteUnicaDeBloque}_abogado_${abogadoCountersJPL[tipoAbogadoKey]}`;
+
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = template.innerHTML.replace(/{idUnicoAbogado}/g, idUnicoAbogadoFinal);
+        const abogadoBlock = tempDiv.querySelector('.abogado-block');
+        if(!abogadoBlock) return;
+
+        abogadoBlock.id = `block_abogado_${idUnicoAbogadoFinal}`;
+        abogadoBlock.querySelector('.tipoAbogadoTitulo').textContent = "ABOGADO " + (elContenedorAbogados.querySelectorAll('.abogado-block').length + 1);
+        
+        if (initialData) {
+            abogadoBlock.querySelector(`#nombreAbogado_${idUnicoAbogadoFinal}`).value = initialData.nombre?.toUpperCase() || '';
+            abogadoBlock.querySelector(`#correoAbogado_${idUnicoAbogadoFinal}`).value = initialData.correo?.toUpperCase() || '';
+        }
+        elContenedorAbogados.appendChild(abogadoBlock);
+    }
+    
+    window.agregarPatrocinante = (idParteUnica, elContenedor) => agregarAbogado(idParteUnica, elContenedor, true);
+    
+    function generarPDF(caratulaData) {
+        // This function remains largely the same, but it's important to use the correct property names from Supabase
+        // e.g., caratulaData.juez_nombre instead of caratulaData.juezNombre
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'p', unit: 'pt', format: 'legal' });
+
+        const margenSuperior = 56, margenIzquierdo = 72, margenDerecho = 72, margenInferior = 56;
+        const contentWidth = doc.internal.pageSize.getWidth() - margenIzquierdo - margenDerecho;
+        const centerX = doc.internal.pageSize.getWidth() / 2;
+        let currentY = margenSuperior;
+
+        const FONT_SIZES = { title: 14, rol: 14, small: 9, medium: 10, large: 12 };
+        const LINE_HEIGHTS = { small: FONT_SIZES.small * 1.3, large: FONT_SIZES.large * 1.3 };
+        const GAPS = { small: 7, medium: 14, large: 28 };
+
+        doc.setFontSize(FONT_SIZES.title).setFont(undefined, 'bold').text("PRIMER JUZGADO DE POLICÍA LOCAL DE VIÑA DEL MAR", centerX, currentY, { align: 'center' });
+        currentY += GAPS.large * 0.8;
+
+        doc.setFontSize(FONT_SIZES.rol).text(`ROL N° ${caratulaData.rol}`, centerX, currentY, { align: 'center' });
+        currentY += GAPS.small * 2.2;
+
+        doc.setLineWidth(1).line(margenIzquierdo, currentY, doc.internal.pageSize.getWidth() - margenDerecho, currentY);
+        currentY += GAPS.medium * 1.2;
+
+        doc.setFontSize(FONT_SIZES.small).setFont(undefined, 'bold');
+        let tipoJuezTexto = { 'titular': 'JUEZ TITULAR:', 'subrogante': 'JUEZ SUBROGANTE:' }[caratulaData.juez_tipo] || 'JUEZ:';
+        doc.text(`${tipoJuezTexto} ${caratulaData.juez_nombre}`, centerX, currentY, { align: 'center' });
+        currentY += LINE_HEIGHTS.small;
+        let tipoSecretarioTexto = { 'abogado': 'SECRETARIO ABOGADO:', 'subrogante_sec': 'SECRETARIO SUBROGANTE:', 'adhoc': 'SECRETARIO AD-HOC:' }[caratulaData.secretario_tipo] || 'SECRETARIO:';
+        doc.text(`${tipoSecretarioTexto} ${caratulaData.secretario_nombre}`, centerX, currentY, { align: 'center' });
+        currentY += 150;
+
+        doc.setFontSize(FONT_SIZES.medium).setFont(undefined, 'bold').text("CARATULADO:", centerX, currentY, { align: 'center' });
+        currentY += GAPS.medium * 2;
+        
+        doc.setFontSize(FONT_SIZES.large).setFont(undefined, 'bold');
+        (caratulaData.caratulado_parte1_nombres || []).forEach(parte => {
+            const splitText = doc.splitTextToSize(parte, contentWidth - 40);
+            doc.text(splitText, centerX, currentY, { align: 'center'});
+            currentY += splitText.length * LINE_HEIGHTS.large;
+        });
+        currentY += LINE_HEIGHTS.large * 0.3;
+        doc.text("CON", centerX, currentY, { align: 'center' });
+        currentY += LINE_HEIGHTS.small * 1.5;
+        (caratulaData.caratulado_parte2_nombres || []).forEach(parte => {
+            const splitText = doc.splitTextToSize(parte, contentWidth - 40);
+            doc.text(splitText, centerX, currentY, { align: 'center'});
+            currentY += splitText.length * LINE_HEIGHTS.large;
+        });
+        currentY += 200;
+        
+        doc.setFontSize(FONT_SIZES.medium).setFont(undefined, 'bold').text("PARTES:", margenIzquierdo, currentY);
+        currentY += GAPS.medium;
+
+        const dibujarDetallePartePDF = (parteData) => {
+            doc.setFontSize(FONT_SIZES.small).setFont(undefined, 'bold').text(`${parteData.tipoParteManual || 'PARTE'}:`, margenIzquierdo, currentY);
+            currentY += LINE_HEIGHTS.small * 1.5;
+            doc.setFont(undefined, 'normal');
+            doc.text(`NOMBRE: ${parteData.nombre || ''}`, margenIzquierdo + 28, currentY); currentY += LINE_HEIGHTS.small;
+            if (parteData.correo) { doc.text(`CORREO ELECTRÓNICO: ${parteData.correo}`, margenIzquierdo + 28, currentY); currentY += LINE_HEIGHTS.small; }
+            if (parteData.representanteLegal?.nombre) {
+                doc.setFont(undefined, 'bold').text(`REPRESENTANTE LEGAL:`, margenIzquierdo, currentY); currentY += LINE_HEIGHTS.small * 1.3;
+                doc.setFont(undefined, 'normal').text(`NOMBRE: ${parteData.representanteLegal.nombre}`, margenIzquierdo + 28, currentY); currentY += LINE_HEIGHTS.small;
+                if (parteData.representanteLegal.correo) { doc.text(`CORREO ELECTRÓNICO: ${parteData.representanteLegal.correo}`, margenIzquierdo + 28, currentY); currentY += LINE_HEIGHTS.small; }
+            }
+            (parteData.abogados || []).forEach(abogadoData => {
+                doc.setFont(undefined, 'bold').text(`ABOGADO:`, margenIzquierdo, currentY); currentY += LINE_HEIGHTS.small* 1.3;
+                doc.setFont(undefined, 'normal').text(`NOMBRE: ${abogadoData.nombre || ''}`, margenIzquierdo + 28, currentY); currentY += LINE_HEIGHTS.small;
+                if (abogadoData.correo) { doc.text(`CORREO ELECTRÓNICO: ${abogadoData.correo}`, margenIzquierdo + 28, currentY); currentY += LINE_HEIGHTS.small; }
+            });
+            currentY += GAPS.small * 0.7;
+        };
+
+        (caratulaData.denunciantes || []).forEach(dibujarDetallePartePDF);
+        (caratulaData.denunciados || []).forEach(dibujarDetallePartePDF);
+        
+        const yFooter = doc.internal.pageSize.getHeight() - margenInferior + 5;
+        let yBaseInferior = yFooter - FONT_SIZES.small - (GAPS.large * 1.5);
+
+        doc.setFontSize(FONT_SIZES.medium).setFont(undefined, 'bold').text("MATERIA:", margenIzquierdo, yBaseInferior);
+        doc.setFont(undefined, 'normal').text((caratulaData.materia || '').toUpperCase(), margenIzquierdo + doc.getTextWidth("MATERIA:") + 8, yBaseInferior);
+        yBaseInferior += FONT_SIZES.medium + GAPS.small * 1.5;
+        doc.setFont(undefined, 'bold').text("FECHA INICIADA:", margenIzquierdo, yBaseInferior);
+        doc.setFont(undefined, 'normal').text((caratulaData.fecha_inicio || '').toUpperCase(), margenIzquierdo + doc.getTextWidth("FECHA INICIADA:") + 8, yBaseInferior);
+        
+        doc.setFontSize(FONT_SIZES.small).setTextColor(150, 150, 150).text("PRIMER JUZGADO DE POLICÍA LOCAL DE VIÑA DEL MAR", centerX, yFooter, {align: 'center'});
+        doc.setTextColor(0,0,0);
+        return doc;
+    }
+
+    // --- SERNAC Functions ---
+    // (Existing TEMPLATE_DEFINITIONS_SERNAC, sernac_showModal, sernac_hideModal, etc. remain here)
+    // ... all other SERNAC and helper functions remain the same as the previous version ...
+    async function handleAddSernacData() {
+        if (!sernac_currentFieldsDefinition || sernac_currentFieldsDefinition.length === 0) {
+            sernac_showModal('Error', 'Selecciona un tipo de documento primero.');
+            return;
+        }
+        const sernac_dataForm = document.getElementById('dataForm');
+        const formData = new FormData(sernac_dataForm);
+        const newEntryData = {};
+        let formIsEmpty = true;
+        let internalFieldCounter = 0;
+
+        sernac_currentFieldsDefinition.forEach((fieldOrGroup) => {
+            if (fieldOrGroup.isGroup) {
+                fieldOrGroup.groupFields.forEach(gf => {
+                    const fieldId = `sernac_field_${internalFieldCounter++}`;
+                    const value = formData.get(fieldId) || "";
+                    newEntryData[gf.name] = value;
+                    if (value.trim() !== "") formIsEmpty = false;
+                });
+            } else if (fieldOrGroup.fixedValue === undefined) {
+                const fieldId = `sernac_field_${internalFieldCounter++}`;
+                const value = formData.get(fieldId) || "";
+                newEntryData[fieldOrGroup.name] = value;
+                if (value.trim() !== "") formIsEmpty = false;
+            } else {
+                 newEntryData[fieldOrGroup.name] = fieldOrGroup.fixedValue;
+            }
+        });
+        
+        if (formIsEmpty) {
+            sernac_showModal('Datos Vacíos', 'Ingresa datos en al menos un campo editable.');
+            return;
+        }
+
+        const sernacRecord = {
+            user_id: currentUser.id,
+            tipo_documento_key: sernac_currentTemplateKey,
+            datos: newEntryData,
+        };
+
+        const { error } = await supabaseClient.from('sernac_causas').insert(sernacRecord);
+        if (error) {
+            console.error("Error guardando causa SERNAC:", error);
+            sernac_showModal("Error", "No se pudo guardar la causa SERNAC.");
+        } else {
+            sernac_showModal('Éxito', `Datos para "${TEMPLATE_DEFINITIONS_SERNAC[sernac_currentTemplateKey].displayName}" agregados.`);
+            sernac_dataForm.reset();
+        }
+    }
+    
+    // ... other SERNAC functions need to be adapted to fetch from Supabase ...
+    async function sernac_renderListado() {
+        // This function would now fetch data from `sernac_causas` table in Supabase
+        // and filter based on the dropdown selection, then call sernac_createTableHTML
+    }
+    
+    
+    // --- User Admin Functions ---
+    async function renderAdminUserList() {
+        const container = document.getElementById('adminListaUsuariosContainer');
+        const noUsersMsg = document.getElementById('admin-no-users-mensaje');
+        if (!container || !noUsersMsg) return;
+
+        const { data: perfiles, error } = await supabaseClient.from('perfiles').select('*');
+
+        if (error) {
+            console.error("Error fetching user profiles:", error);
+            noUsersMsg.textContent = "Error al cargar usuarios.";
+            return;
+        }
+
+        container.innerHTML = '';
+        if (perfiles.length === 0) {
+            noUsersMsg.style.display = 'block';
+        } else {
+            noUsersMsg.style.display = 'none';
+            const table = document.createElement('table');
+            table.className = 'min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg';
+            table.innerHTML = `
+                <thead class="bg-gray-50"><tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RUT</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                </tr></thead>
+                <tbody class="bg-white divide-y divide-gray-200"></tbody>
+            `;
+            const tbody = table.querySelector('tbody');
+            perfiles.forEach(perfil => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${perfil.nombre || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${perfil.rut}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${perfil.tipo || 'User'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button class="text-indigo-600 hover:text-indigo-900 mr-3 btn-edit-user" data-id="${perfil.id}">Editar</button>
+                        ${perfil.id !== currentUser.id ? `<button class="text-red-600 hover:text-red-900 btn-delete-user" data-id="${perfil.id}">Eliminar</button>` : ''}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            container.appendChild(table);
+
+            container.querySelectorAll('.btn-edit-user').forEach(btn => btn.addEventListener('click', (e) => adminEditUser(e.target.dataset.id)));
+            container.querySelectorAll('.btn-delete-user').forEach(btn => btn.addEventListener('click', (e) => adminDeleteUser(e.target.dataset.id)));
+        }
+    }
+
+    async function handleAdminUserFormSubmit(event) {
+        event.preventDefault();
+        const rutInput = document.getElementById('adminUserRut');
+        const rut = formatRut(rutInput.value.trim());
+        const clave = document.getElementById('adminUserClave').value;
+        const nombre = document.getElementById('adminUserName').value;
+        const tipo = document.getElementById('adminUserTipo').value;
+        const email = `${rut.replace(/\./g, '').replace(/-/g, '')}@jpl.local`;
+
+        if (!validateRut(rut)) {
+            sernac_showModal("Error de Validación", "RUT inválido.");
+            return;
+        }
+
+        if (adminEditingUserId) { // --- UPDATE USER ---
+            const { data, error } = await supabaseClient.auth.admin.updateUserById(adminEditingUserId, { password: clave || undefined });
+            if (error) {
+                console.error("Error updating auth user:", error);
+                sernac_showModal("Error", "No se pudo actualizar la clave del usuario.");
+                return;
+            }
+            const { error: profileError } = await supabaseClient.from('perfiles').update({ nombre, rut, tipo }).eq('id', adminEditingUserId);
+            if (profileError) {
+                console.error("Error updating profile:", profileError);
+                sernac_showModal("Error", "No se pudo actualizar el perfil del usuario.");
+            } else {
+                sernac_showModal("Éxito", "Usuario actualizado correctamente.");
+                adminCancelUserEdit();
+                await renderAdminUserList();
+            }
+        } else { // --- CREATE USER ---
+            if (!clave) {
+                sernac_showModal("Error", "La clave es requerida para nuevos usuarios.");
+                return;
+            }
+            const { data, error } = await supabaseClient.auth.admin.createUser({
+                email: email,
+                password: clave,
+                user_metadata: { nombre: nombre, rut: rut, tipo: tipo }
+            });
+            if (error) {
+                console.error("Error creating user:", error);
+                sernac_showModal("Error", error.message);
+            } else {
+                sernac_showModal("Éxito", "Usuario creado correctamente.");
+                adminCancelUserEdit();
+                await renderAdminUserList();
+            }
+        }
+    }
+
+    async function adminEditUser(id) {
+        const { data: perfil, error } = await supabaseClient.from('perfiles').select('*').eq('id', id).single();
+        if (error) {
+             console.error("Error fetching user to edit:", error); return;
+        }
+
+        document.getElementById('adminFormTitulo').textContent = `Editando Usuario: ${perfil.nombre}`;
+        document.getElementById('adminUserName').value = perfil.nombre || '';
+        const adminUserRutInput = document.getElementById('adminUserRut');
+        adminUserRutInput.value = perfil.rut;
+        adminUserRutInput.readOnly = true; // Prevent changing RUT/email
+        
+        document.getElementById('adminUserClave').value = '';
+        document.getElementById('adminUserClave').placeholder = 'Dejar en blanco para no cambiar clave';
+        document.getElementById('adminUserTipo').value = perfil.tipo || 'User';
+        
+        adminEditingUserId = id;
+        document.getElementById('adminGuardarUsuarioBtn').textContent = 'Actualizar Usuario';
+        document.getElementById('adminCancelarEdicionUsuarioBtn').classList.remove('hidden');
+    }
+    
+    function adminCancelUserEdit() {
+        document.getElementById('adminFormTitulo').textContent = 'Crear Nuevo Usuario';
+        document.getElementById('adminUserForm').reset();
+        adminEditingUserId = null;
+        document.getElementById('adminUserClave').placeholder = '';
+        document.getElementById('adminUserRut').readOnly = false;
+        document.getElementById('adminGuardarUsuarioBtn').textContent = 'Guardar Usuario';
+        document.getElementById('adminCancelarEdicionUsuarioBtn').classList.add('hidden');
+    }
+
+    async function adminDeleteUser(id) {
+        if (id === currentUser.id) {
+            sernac_showModal("Error", "No puede eliminarse a sí mismo.");
+            return;
+        }
+        if (confirm(`¿Está seguro de que desea eliminar este usuario? Esta acción es irreversible.`)) {
+            const { error } = await supabaseClient.auth.admin.deleteUser(id);
+            if (error) {
+                console.error("Error deleting user:", error);
+                sernac_showModal("Error", "No se pudo eliminar el usuario.");
+            } else {
+                sernac_showModal("Éxito", "Usuario eliminado correctamente.");
+                await renderAdminUserList();
+            }
+        }
+    }
+
+</script>
+
+</body>
+</html>

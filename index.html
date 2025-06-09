@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión JPL y SERNAC - Primer Juzgado de Policía Local de Viña del Mar</title>
+    <title>Primer Juzgado de Policía Local de Viña del Mar</title>
     <!-- LIBRERÍAS EXTERNAS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,11 +15,12 @@
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
-            background-color: #e9ebee;
+            background-color: #f0f2f5;
             color: #000;
             font-size: 13px;
             display: flex;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
         }
 
         #sidebar {
@@ -31,7 +32,6 @@
             display: none; /* Initially hidden */
             flex-direction: column;
             flex-shrink: 0;
-            justify-content: space-between;
         }
 
         .logo-container {
@@ -98,11 +98,58 @@
             fill: #fff; 
         }
 
+        #main-wrapper {
+            flex-grow: 1;
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        #top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 25px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #e0e0e0;
+            flex-shrink: 0;
+        }
+
+        #top-bar-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        #logout-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e53935;
+            border: none;
+            border-radius: 5px;
+            width: 38px;
+            height: 38px;
+            padding: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #logout-button:hover {
+            background-color: #c62828;
+        }
+
+        #logout-button svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
         #main-content {
             flex-grow: 1;
             padding: 25px;
             overflow-y: auto;
-            display: none; /* Initially hidden */
         }
 
         .container {
@@ -258,7 +305,7 @@
             display: block;
         }
 
-        .container button:not(.remove-btn):not(.action-btn), .container .add-btn {
+        .container button:not(.remove-btn):not(.action-btn):not(#logout-button), .container .add-btn {
             background-color: #3f51b5;
             color: white;
             padding: 11px 22px;
@@ -271,7 +318,7 @@
             margin-top: 12px;
             text-transform: uppercase;
         }
-        .container button:hover, .container .add-btn:hover {
+        .container button:not(#logout-button):hover, .container .add-btn:hover {
             background-color: #303f9f;
         }
         .remove-btn, .action-btn {
@@ -511,7 +558,7 @@
             <div class="logo-container">
                 <img id="sidebar-logo" src="https://i.postimg.cc/44h8WjRD/Sin-t-tulo-2.png" alt="Logo Juzgado" onerror="this.onerror=null;this.src='https://placehold.co/120x120/EAEAEA/333333?text=Logo';">
             </div>
-            <h2>Menú Principal</h2>
+            <h2></h2>
             <ul>
                 <li id="menuCaratulasJPL" onclick="mostrarContenido('vistaCaratulas', this)">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/></svg>
@@ -542,26 +589,27 @@
                 </li>
             </ul>
         </div>
-         <div>
-            <ul id="logout-section">
-                <li onclick="logout()">
-                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-                        <path fill-rule="evenodd" d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm10.72 4.72a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H9a.75.75 0 0 1 0-1.5h10.94l-1.72-1.72a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                    </svg>
-                    Cerrar sesión
-                </li>
-            </ul>
+    </div>
+
+    <div id="main-wrapper" style="display: none;">
+        <div id="top-bar">
+             <h1 id="top-bar-title"></h1>
+             <button id="logout-button" onclick="logout()" title="Cerrar Sesión">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fill-rule="evenodd" d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm10.72 4.72a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H9a.75.75 0 0 1 0-1.5h10.94l-1.72-1.72a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+        <div id="main-content">
+            <!-- Views will be dynamically populated from templates -->
+            <div id="vistaCaratulas" class="vista-contenido"></div>
+            <div id="vistaListadoCaratulasJPL" class="vista-contenido"></div>
+            <div id="vistaCausasSernac" class="vista-contenido"></div>
+            <div id="vistaListadoSernac" class="vista-contenido"></div>
+            <div id="vistaAdmin" class="vista-contenido"></div>
         </div>
     </div>
 
-    <div id="main-content" style="display: none;">
-        <!-- Views will be dynamically populated from templates -->
-        <div id="vistaCaratulas" class="vista-contenido"></div>
-        <div id="vistaListadoCaratulasJPL" class="vista-contenido"></div>
-        <div id="vistaCausasSernac" class="vista-contenido"></div>
-        <div id="vistaListadoSernac" class="vista-contenido"></div>
-        <div id="vistaAdmin" class="vista-contenido"></div>
-    </div>
 
     <!-- SERNAC Custom Modal -->
     <div id="customModalSernac" class="modal fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 opacity-0 pointer-events-none transition-opacity duration-300">
@@ -1045,7 +1093,6 @@
             if (error) {
                 errorMessageDiv.textContent = 'Usuario o clave incorrectos.';
                 console.error('Login Error:', error.message);
-                sernac_showModal("Error de Inicio de Sesión", `Supabase respondió: ${error.message}`);
                 return;
             }
 
@@ -1055,7 +1102,7 @@
                 
                 document.getElementById('loginModal').style.display = 'none';
                 document.getElementById('sidebar').style.display = 'flex';
-                document.getElementById('main-content').style.display = 'block';
+                document.getElementById('main-wrapper').style.display = 'flex';
                 
                 await initializeAppComponents();
                 errorMessageDiv.textContent = '';
@@ -1075,7 +1122,6 @@
     function updateMenuVisibility() {
         if (!currentUser) return;
         
-        console.log("Actualizando visibilidad del menú para el rol:", currentUser.tipo);
         const isAdmin = currentUser.tipo === 'Admin';
 
         document.getElementById('menuListadoSernac').classList.toggle('hidden', !isAdmin);
@@ -1132,6 +1178,8 @@
         document.querySelectorAll('#sidebar ul li').forEach(item => item.classList.remove('active'));
         document.getElementById(idVista).classList.add('active');
         menuItem.classList.add('active');
+        
+        document.getElementById('top-bar-title').textContent = menuItem.textContent.trim();
     
         if (idVista === 'vistaListadoCaratulasJPL') cargarYRenderizarCaratulasGuardadas();
         if (idVista === 'vistaListadoSernac') sernac_renderListado();
@@ -1509,12 +1557,12 @@
     }
 
     function toggleRepresentanteLegal(boton, idParteUnica) {
-        const contenidoRepLegal = document.querySelector(`.contenidoRepresentanteLegal_${parteIdUnica}`);
+        const contenidoRepLegal = document.querySelector(`.contenidoRepresentanteLegal_${idParteUnica}`);
         if (contenidoRepLegal) contenidoRepLegal.classList.toggle('hidden-field');
     }
 
     function quitarRepresentanteLegal(botonQuitar, idParteUnica) {
-        const contenidoRepLegal = document.querySelector(`.contenidoRepresentanteLegal_${parteIdUnica}`);
+        const contenidoRepLegal = document.querySelector(`.contenidoRepresentanteLegal_${idParteUnica}`);
         if(contenidoRepLegal) {
             contenidoRepLegal.classList.add('hidden-field');
             contenidoRepLegal.querySelectorAll('input').forEach(input => input.value = '');
@@ -2100,18 +2148,17 @@
         }
 
         if (adminEditingUserId) { // --- UPDATE USER ---
-            const updateData = {
-                nombre: nombre,
-                tipo: tipo
-            };
-            if (clave) {
-                updateData.password = clave;
-            }
-
             const { data, error } = await supabaseClient.functions.invoke('update-user', {
-                body: { userId: adminEditingUserId, updateData: updateData },
+                body: { 
+                    userId: adminEditingUserId, 
+                    updateData: {
+                        password: clave || undefined,
+                        nombre: nombre,
+                        tipo: tipo
+                    } 
+                },
             });
-
+            
             if (error || (data && data.error)) {
                 const errorMessage = error?.message || data?.error.message;
                 console.error("Error updating user via function:", errorMessage);
@@ -2121,6 +2168,7 @@
                 adminCancelUserEdit();
                 await renderAdminUserList();
             }
+
         } else { // --- CREATE USER ---
             if (!clave) {
                 sernac_showModal("Error", "La clave es requerida para nuevos usuarios.");
@@ -2186,10 +2234,14 @@
             return;
         }
         if (confirm(`¿Está seguro de que desea eliminar este usuario? Esta acción es irreversible.`)) {
-            const { error } = await supabaseClient.auth.admin.deleteUser(id);
-            if (error) {
-                console.error("Error deleting user:", error);
-                sernac_showModal("Error", "No se pudo eliminar el usuario.");
+            const { data, error } = await supabaseClient.functions.invoke('delete-user', {
+                body: { userId: id }
+            });
+
+            if (error || (data && data.error)) {
+                const errorMessage = error?.message || data?.error.message;
+                console.error("Error deleting user via function:", errorMessage);
+                sernac_showModal("Error", `La función segura de eliminación falló: ${errorMessage}`);
             } else {
                 sernac_showModal("Éxito", "Usuario eliminado correctamente.");
                 await renderAdminUserList();

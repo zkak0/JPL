@@ -1,10 +1,8 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión JPL y SERNAC - Primer Juzgado de Policía Local de Viña del Mar</title>
-    <!-- LIBRERÍAS EXTERNAS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -98,14 +96,14 @@
         .saved-caratula-actions .btn-edit-caratula svg { fill: #16a34a; }
         .saved-caratula-actions .btn-edit-caratula:hover { background-color: #dcfce7; border-color: #16a34a; }
         .saved-caratula-actions .btn-edit-caratula:hover svg { fill: #15803d; }
-        .saved-caratula-actions .btn-delete-caratula svg { fill: #dc2626; }
+        .saved-caratula-actions .btn-delete-caratula { fill: #dc2626; }
         .saved-caratula-actions .btn-delete-caratula:hover { background-color: #fee2e2; border-color: #dc2626; }
         .saved-caratula-actions .btn-delete-caratula:hover svg { fill: #c62828; }
-        
+
         /* JPL Caratula List Layout Fix */
         .saved-caratula-item { background-color: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px 20px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; gap: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .saved-caratula-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-        .saved-caratula-info div { margin-bottom: 4px; }
+        .saved-caratula-info div { margin-bottom: 4px; font-size: 0.95em; }
         .saved-caratula-info .caratulado-display { font-weight: bold; font-size: 1.1em; color: #1a237e; margin-bottom: 8px; }
         .saved-caratula-actions { display: flex; gap: 10px; flex-shrink: 0; }
         #no-caratulas-mensaje { text-align: center; color: #757575; font-size: 1.1em; padding: 30px; }
@@ -113,12 +111,14 @@
         /* SERNAC List & Table Styles */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .table-responsive table { width: 100%; min-width: 1200px; border-collapse: collapse; }
-        .table-responsive th, .table-responsive td { white-space: nowrap; padding: 0.75rem 1rem; border: 1px solid #e5e7eb; text-align: left; }
-        .table-responsive th { background-color: #f2f2f2; font-weight: 600; color: #374151; white-space: normal; vertical-align: middle;}
+        .table-responsive th, .table-responsive td { border: 1px solid #e5e7eb; text-align: left; vertical-align: middle; padding: 0.75rem 1rem;}
+        .table-responsive th { background-color: #f2f2f2; font-weight: 600; color: #374151; white-space: normal; }
+        .table-responsive td { white-space: nowrap; }
         .table-responsive::-webkit-scrollbar { height: 10px; }
         .table-responsive::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 5px; }
         .table-responsive::-webkit-scrollbar-thumb { background: #888; border-radius: 5px; }
         .table-responsive::-webkit-scrollbar-thumb:hover { background: #555; }
+        
         #listadoSentencias, #listadoIniciadas { display: none; margin-top: 1.5rem; }
         #listadoSentencias.active-sernac-table, #listadoIniciadas.active-sernac-table { display: block; }
         
@@ -154,7 +154,7 @@
             <div class="logo-container">
                 <img id="sidebar-logo" src="https://i.postimg.cc/44h8WjRD/Sin-t-tulo-2.png" alt="Logo Juzgado" onerror="this.onerror=null;this.src='https://placehold.co/120x120/EAEAEA/333333?text=Logo';">
             </div>
-            <h2></h2>
+            <h2>Menú Principal</h2>
             <ul>
                 <li id="menuCaratulasJPL" onclick="mostrarContenido('vistaCaratulas', this)">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/></svg>
@@ -324,7 +324,7 @@
     </template>
 
     <template id="templateVistaCausasSernac">
-        <div id="viewCausasSernacContainer" class="container">
+        <div class="container">
             <h1 class="jpl-view-title">Ingresar Nueva Causa SERNAC</h1>
             <div id="templateSelectionSection" class="mb-6">
                 <label for="templateSelector" class="block text-lg font-semibold text-gray-700 mb-2">1. Selecciona el tipo de documento a rellenar:</label>
@@ -348,7 +348,7 @@
 
     <template id="templateVistaListadoSernac">
         <div id="viewListadoSernacContainer" class="container">
-            <h1 class="jpl-view-title text-left">Listado de Causas SERNAC Agregadas</h1>
+            <h1 class="text-2xl md:text-3xl font-bold text-indigo-700 mb-8 text-left">Listado de Causas SERNAC Agregadas</h1>
             <div class="mb-6">
                 <label for="sernacListadoTypeSelector" class="block text-lg font-semibold text-gray-700 mb-2">Ver listado de:</label>
                 <select id="sernacListadoTypeSelector" class="block w-full max-w-sm px-3 py-2.5 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -358,9 +358,15 @@
                 </select>
             </div>
 
-            <button id="exportListadoButton" class="add-btn" style="background-color: #16a34a;">
-                Exportar Listado Completo a Excel
-            </button>
+            <div class="flex space-x-2">
+                <button id="exportListadoButton" class="add-btn" style="background-color: #16a34a;">
+                    Exportar a Excel
+                </button>
+                <button id="resetSernacDataButton" class="add-btn" style="background-color: #e53935;">
+                    Limpiar Listado Actual
+                </button>
+            </div>
+
             <div id="listadoContainerSernac" class="space-y-4 mt-4">
                 <div id="listadoSentencias"></div>
                 <div id="listadoIniciadas"></div>
@@ -407,7 +413,7 @@
 
             <div>
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">Usuarios Registrados</h2>
-                <div id="adminListaUsuariosContainer" class="table-responsive">
+                <div id="adminListaUsuariosContainer">
                      <p id="admin-no-users-mensaje" class="text-gray-500 text-center py-4">No hay usuarios registrados.</p>
                 </div>
             </div>
@@ -496,10 +502,10 @@
         <div class="saved-caratula-item" data-id="{id}">
             <div class="saved-caratula-info">
                 <div class="caratulado-display">{caratuladoCompleto}</div>
-                <div class="info-line"><strong>ROL N°:</strong> <span data-field="rol">{rol}</span></div>
-                <div class="info-line"><strong>MATERIA:</strong> <span data-field="materia">{materia}</span></div>
-                <div class="info-line"><strong>ACTUARIO:</strong> <span data-field="actuario">{actuario}</span></div>
-                <div class="info-line"><strong>CREADA:</strong> <span data-field="fechaCreacion">{fechaCreacion}</span></div>
+                <div class="info-line"><strong>ROL N°:</strong> <span data-field="rol"></span></div>
+                <div class="info-line"><strong>MATERIA:</strong> <span data-field="materia"></span></div>
+                <div class="info-line"><strong>ACTUARIO:</strong> <span data-field="actuario"></span></div>
+                <div class="info-line"><strong>CREADA:</strong> <span data-field="fechaCreacion"></span></div>
             </div>
             <div class="saved-caratula-actions">
                 <button type="button" class="action-btn btn-view-pdf" title="Ver PDF">
@@ -543,7 +549,7 @@
     let sernac_currentFileNameBase = '';
     let sernac_currentTemplateKey = '';
     let adminEditingUserId = null;
-
+    let sernac_editingId = null; 
 
     // --- HELPER FUNCTIONS (MODAL) ---
     function sernac_showModal(title, message) {
@@ -656,6 +662,9 @@
         if (adminCancelarEdicionUsuarioBtn) {
             adminCancelarEdicionUsuarioBtn.addEventListener('click', adminCancelUserEdit);
         }
+
+        const resetSernacBtn = document.getElementById('resetSernacDataButton');
+        if(resetSernacBtn) resetSernacBtn.addEventListener('click', sernac_handleReset);
     }
     
     // --- LOGIN & AUTH SYSTEM ---
@@ -938,11 +947,23 @@
             const caratuladoCompleto = `${caratuladoParte1Str} CON ${caratuladoParte2Str}`;
             const fechaFormateada = new Date(caratula.created_at).toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
             
-            itemDiv.querySelector('.caratulado-display').textContent = caratuladoCompleto || 'N/A';
-            itemDiv.querySelector('span[data-field="rol"]').textContent = caratula.rol || 'N/A';
-            itemDiv.querySelector('span[data-field="materia"]').textContent = caratula.materia || 'N/A';
-            itemDiv.querySelector('span[data-field="actuario"]').textContent = caratula.actuario || 'N/A';
-            itemDiv.querySelector('span[data-field="fechaCreacion"]').textContent = fechaFormateada;
+            const infoDiv = itemDiv.querySelector('.saved-caratula-info');
+            if (infoDiv) {
+                const caratuladoDisplayEl = infoDiv.querySelector('.caratulado-display');
+                if (caratuladoDisplayEl) caratuladoDisplayEl.textContent = caratuladoCompleto || 'N/A';
+                
+                const rolSpan = infoDiv.querySelector('span[data-field="rol"]');
+                if (rolSpan) rolSpan.textContent = caratula.rol || 'N/A';
+
+                const materiaSpan = infoDiv.querySelector('span[data-field="materia"]');
+                if (materiaSpan) materiaSpan.textContent = caratula.materia || 'N/A';
+
+                const actuarioSpan = infoDiv.querySelector('span[data-field="actuario"]');
+                if (actuarioSpan) actuarioSpan.textContent = caratula.actuario || 'N/A';
+                
+                const fechaSpan = infoDiv.querySelector('span[data-field="fechaCreacion"]');
+                if (fechaSpan) fechaSpan.textContent = fechaFormateada;
+            }
             
             itemDiv.querySelector('.btn-view-pdf').addEventListener('click', () => generarYDescargarPDFGuardado(caratula.id));
             itemDiv.querySelector('.btn-edit-caratula').addEventListener('click', () => iniciarEdicionCaratula(caratula.id));
@@ -969,7 +990,7 @@
         const { error } = await supabaseClient.from('jpl_caratulas').delete().eq('id', id);
         if (error) {
             console.error("Error eliminando carátula:", error);
-            sernac_showModal("Error", "No se pudo eliminar la carátula.");
+            sernac_showModal("Error", "No se pudo eliminar la carátula. Verifique los permisos en la base de datos (RLS).");
         } else {
             sernac_showModal("Éxito", "Carátula eliminada.");
             await cargarYRenderizarCaratulasGuardadas();
@@ -1035,7 +1056,7 @@
                 nombreJuezInput.value = "JULIO REYES MADARIAGA";
                 nombreJuezInput.readOnly = true;
             } else if (tipoSeleccionado === 'subrogante') {
-                nombreJuezInput.value = "DANIEL DIAZ GAETE";
+                nombreJuezInput.value = "DIEGO SALINAS ALTAMIRANO";
                 nombreJuezInput.readOnly = true;
             } else {
                 if(tipoSeleccionado === "") nombreJuezInput.value = "";
@@ -1136,7 +1157,7 @@
     }
 
     function toggleRepresentanteLegal(boton, idParteUnica) {
-        const contenidoRepLegal = document.querySelector(`.contenidoRepresentanteLegal_${idParteUnica}`);
+        const contenidoRepLegal = document.querySelector(`.contenidoRepresentanteLegal_${parteIdUnica}`);
         if (contenidoRepLegal) contenidoRepLegal.classList.toggle('hidden-field');
     }
 
@@ -1490,13 +1511,30 @@
             datos: newEntryData,
         };
 
-        const { error } = await supabaseClient.from('sernac_causas').insert(sernacRecord);
-        if (error) {
-            console.error("Error guardando causa SERNAC:", error);
-            sernac_showModal("Error", "No se pudo guardar la causa SERNAC.");
-        } else {
-            sernac_showModal('Éxito', `Datos para "${TEMPLATE_DEFINITIONS_SERNAC[sernac_currentTemplateKey].displayName}" agregados.`);
+        try {
+            let error;
+            // Si estamos editando (sernac_editingId tiene un valor)...
+            if (sernac_editingId) {
+                const { error: updateError } = await supabaseClient.from('sernac_causas').update(sernacRecord).eq('id', sernac_editingId);
+                error = updateError;
+            } else { // Si no, estamos creando uno nuevo
+                const { error: insertError } = await supabaseClient.from('sernac_causas').insert(sernacRecord);
+                error = insertError;
+            }
+
+            if (error) throw error;
+            
+            sernac_showModal('Éxito', sernac_editingId ? 'Registro actualizado correctamente.' : 'Registro agregado correctamente.');
             sernac_dataForm.reset();
+            sernac_editingId = null; // Limpiamos el ID de edición
+            document.getElementById('addDataButton').textContent = 'Agregar Datos'; // Restauramos el texto del botón
+            document.getElementById('templateSelector').value = '';
+            document.getElementById('templateSelector').dispatchEvent(new Event('change'));
+            mostrarContenido('vistaListadoSernac', document.getElementById('menuListadoSernac')); // Volver a la lista
+
+        } catch (dbError) {
+            console.error("Error guardando/actualizando causa SERNAC:", dbError);
+            sernac_showModal("Error", "No se pudo guardar o actualizar el registro.");
         }
     }
     
@@ -1565,19 +1603,26 @@
         });
 
         headers.forEach(header => {
-            tableHTML += `<th class="bg-gray-100 px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">${header}</th>`;
+            tableHTML += `<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">${header}</th>`;
         });
+        tableHTML += `<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ACCIONES</th>`;
         tableHTML += '</tr></thead><tbody>';
 
         if (!dataItems || dataItems.length === 0) {
-            const typeName = fieldDefinitions === TEMPLATE_DEFINITIONS_SERNAC.sentencias_sernac.fields ? "Causas con Sentencias" : "Causas Iniciadas";
-            tableHTML += `<tr><td colspan="${headers.length}" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">No hay ${typeName.toLowerCase()} agregadas aún.</td></tr>`;
+            const typeName = sernac_currentTemplateKey === 'sentencias_sernac' ? "Causas con Sentencias" : "Causas Iniciadas";
+            tableHTML += `<tr><td colspan="${headers.length + 1}" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">No hay ${typeName.toLowerCase()} agregadas aún.</td></tr>`;
         } else {
             dataItems.forEach(item => {
-                tableHTML += '<tr class="hover:bg-gray-50">';
+                tableHTML += '<tr>';
                 headers.forEach(headerName => {
                     tableHTML += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.datos[headerName] || ''}</td>`;
                 });
+                tableHTML += `<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div style="display: flex; gap: 8px;">
+                        <button onclick="sernac_handleEdit('${item.id}')" title="Editar" class="action-btn" style="border-color: #16a34a;"><svg style="fill:#16a34a;" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 0 24 24" width="20px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M14.06 9.02l.92.92L5.92 19H5v-.92l9.06-9.06M17.66 3c-.26 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34a.39.39 0 0 0-.55 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>
+                        <button onclick="sernac_handleDelete('${item.id}')" title="Eliminar" class="remove-btn"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 0 24 24" width="20px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></button>
+                    </div>
+                </td>`;
                 tableHTML += '</tr>';
             });
         }
@@ -1656,6 +1701,86 @@
             }
         }
         return null;
+    }
+
+    async function sernac_handleDelete(id) {
+        if (!confirm('¿Estás seguro de que deseas eliminar este registro de forma permanente?')) {
+            return;
+        }
+        try {
+            const { error } = await supabaseClient.from('sernac_causas').delete().eq('id', id);
+            if (error) throw error;
+            sernac_showModal('Éxito', 'El registro ha sido eliminado.');
+            sernac_renderListado(); // Volver a cargar la lista
+        } catch (error) {
+            console.error('Error al eliminar el registro:', error);
+            sernac_showModal('Error', 'No se pudo eliminar el registro.');
+        }
+    }
+
+    async function sernac_handleEdit(id) {
+        try {
+            const { data, error } = await supabaseClient.from('sernac_causas').select('*').eq('id', id).single();
+            if (error || !data) throw error || new Error('Registro no encontrado');
+            
+            mostrarContenido('vistaCausasSernac', document.getElementById('menuSernac'));
+            
+            sernac_editingId = id; 
+            const templateKey = data.tipo_documento_key;
+            document.getElementById('templateSelector').value = templateKey;
+            document.getElementById('templateSelector').dispatchEvent(new Event('change'));
+
+            setTimeout(() => {
+                const definition = TEMPLATE_DEFINITIONS_SERNAC[templateKey];
+                let fieldCounter = 0;
+                definition.fields.forEach(fieldOrGroup => {
+                    if (fieldOrGroup.isGroup) {
+                        fieldOrGroup.groupFields.forEach(field => {
+                            const fieldId = `sernac_field_${fieldCounter++}`;
+                            if(document.getElementById(fieldId)) document.getElementById(fieldId).value = data.datos[field.name] || '';
+                        });
+                    } else if (fieldOrGroup.fixedValue === undefined) {
+                        const fieldId = `sernac_field_${fieldCounter++}`;
+                        if(document.getElementById(fieldId)) document.getElementById(fieldId).value = data.datos[fieldOrGroup.name] || '';
+                    }
+                });
+                document.getElementById('addDataButton').textContent = 'Actualizar Datos';
+            }, 100);
+
+        } catch (error) {
+            console.error('Error al cargar datos para editar:', error);
+            sernac_showModal('Error', 'No se pudieron cargar los datos para editar.');
+        }
+    }
+    
+    async function sernac_handleReset() {
+        const selector = document.getElementById('sernacListadoTypeSelector');
+        const selectedList = selector.value;
+        
+        if (!selectedList) {
+            sernac_showModal('Aviso', 'Por favor, selecciona un listado para limpiar.');
+            return;
+        }
+
+        const key_to_delete = selectedList.replace('_list', '');
+        const list_name = document.querySelector(`option[value="${selectedList}"]`).textContent;
+
+        if (!confirm(`¿ESTÁS COMPLETAMENTE SEGURO?\n\nEsta acción eliminará TODOS los registros del listado "${list_name}". Esta acción es irreversible.`)) {
+            return;
+        }
+        if (!confirm(`CONFIRMACIÓN FINAL:\n\n¿Realmente deseas borrar todos los datos de "${list_name}"?`)) {
+            return;
+        }
+
+        try {
+            const { error } = await supabaseClient.from('sernac_causas').delete().eq('tipo_documento_key', key_to_delete);
+            if (error) throw error;
+            sernac_showModal('Éxito', `Todos los registros de "${list_name}" han sido eliminados.`);
+            sernac_renderListado();
+        } catch (error) {
+            console.error('Error al limpiar el listado:', error);
+            sernac_showModal('Error', 'No se pudo limpiar el listado.');
+        }
     }
     
     // --- User Admin Functions ---
@@ -1843,3 +1968,7 @@
 
 </body>
 </html>
+
+
+        
+

@@ -289,13 +289,13 @@
                 <label for="jplCaratulaTipoSecretario">TIPO SECRETARIO:</label>
                 <select id="jplCaratulaTipoSecretario" name="jplCaratulaTipoSecretario" onchange="actualizarNombreSecretario()">
                     <option value="">SELECCIONE TIPO DE SECRETARIO</option>
-                    <option value="abogado">SECRETARIO ABOGADO</option>
-                    <option value="subrogante_sec">SECRETARIO SUBROGANTE</option>
+                    <option value="abogado">SECRETARIO SUBROGANTE </option>
+                    <option value="subrogante_sec">SECRETARIA SUBROGANTE</option>
                     <option value="adhoc">SECRETARIO AD-HOC</option>
                 </select>
             </div>
             <div class="field-group">
-                <label for="jplCaratulaSecretario">NOMBRE SECRETARIO ABOGADO:</label>
+                <label for="jplCaratulaSecretario">NOMBRE SECRETARIO SUBROGANTE :</label>
                 <input type="text" id="jplCaratulaSecretario" name="jplCaratulaSecretario" placeholder="NOMBRE DEL SECRETARIO">
             </div>
         </div>
@@ -1286,7 +1286,7 @@
         let tipoJuezTexto = { 'titular': 'JUEZ TITULAR:', 'subrogante': 'JUEZ SUBROGANTE:' }[caratulaData.juez_tipo] || 'JUEZ:';
         doc.text(`${tipoJuezTexto} ${caratulaData.juez_nombre}`, centerX, currentY, { align: 'center' });
         currentY += LINE_HEIGHTS.small;
-        let tipoSecretarioTexto = { 'abogado': 'SECRETARIO ABOGADO:', 'subrogante_sec': 'SECRETARIO SUBROGANTE:', 'adhoc': 'SECRETARIO AD-HOC:' }[caratulaData.secretario_tipo] || 'SECRETARIO:';
+        let tipoSecretarioTexto = { 'abogado': 'SECRETARIO SUBROGANTE :', 'subrogante_sec': 'SECRETARIA SUBROGANTE:', 'adhoc': 'SECRETARIO AD-HOC:' }[caratulaData.secretario_tipo] || 'SECRETARIO:';
         doc.text(`${tipoSecretarioTexto} ${caratulaData.secretario_nombre}`, centerX, currentY, { align: 'center' });
         currentY += 150;
 

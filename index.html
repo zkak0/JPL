@@ -1574,7 +1574,7 @@
             document.getElementById('addDataButton').textContent = 'Agregar Datos'; // Restauramos el texto del botón
             document.getElementById('templateSelector').value = '';
             document.getElementById('templateSelector').dispatchEvent(new Event('change'));
-            mostrarContenido('vistaListadoSernac', document.getElementById('menuListadoSernac')); // Volver a la lista
+            //mostrarContenido('vistaListadoSernac', document.getElementById('menuListadoSernac')); // Volver a la lista
 
         } catch (dbError) {
             console.error("Error guardando/actualizando causa SERNAC:", dbError);

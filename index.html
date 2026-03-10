@@ -49,9 +49,9 @@
         #logout-button { display: flex; align-items: center; justify-content: center; background-color: #e53935; border: none; border-radius: 5px; width: 38px; height: 38px; padding: 8px; cursor: pointer; transition: background-color 0.2s; }
         #logout-button:hover { background-color: #c62828; }
         #logout-button svg { width: 24px; height: 24px; fill: white; }
-        #main-content { flex-grow: 1; padding: 25px; overflow-y: auto; }
+        #main-content { flex-grow: 1; padding: 25px; overflow-y: auto; overflow-x: hidden; min-width: 0; }
 
-        .container { background-color: #ffffff; padding: 35px; border-radius: 10px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); width: 100%; max-width: 950px; margin: 0 auto; }
+        .container { background-color: #ffffff; padding: 35px; border-radius: 10px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); width: 100%; max-width: 100%; margin: 0 auto; overflow-x: hidden; box-sizing: border-box; }
         .jpl-view-title { font-size: 1.75rem; line-height: 2.25rem; font-weight: 700; text-align: center; color: #3730a3; margin-bottom: 2rem; }
         @media (min-width: 768px) { .jpl-view-title { font-size: 1.875rem; line-height: 2.25rem; } }
         
@@ -111,14 +111,18 @@
         /* SERNAC List & Table Styles (CORREGIDO) */
         .table-responsive {
             width: 100%;
+            display: block;
             overflow-x: auto;
+            overflow-y: hidden;
             -webkit-overflow-scrolling: touch;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
         }
         .table-responsive table {
             width: 100%;
-            min-width: 1200px;
+            min-width: 100%;
             border-collapse: collapse;
-            table-layout: fixed; /* NUEVO: Ayuda a controlar mejor los anchos de columna */
+            table-layout: auto; /* Cambiado a auto para que se ajuste automáticamente al contenido */
         }
         .table-responsive th, .table-responsive td {
             border: 1px solid #e5e7eb;
@@ -142,16 +146,16 @@
         .table-responsive::-webkit-scrollbar-thumb { background: #888; border-radius: 5px; }
         .table-responsive::-webkit-scrollbar-thumb:hover { background: #555; }
         
-        /* NUEVO: Clases para controlar anchos de columna */
-        .col-rol { width: 120px; }
-        .col-fecha { width: 110px; }
-        .col-proveedor { width: 250px; }
-        .col-rut { width: 120px; }
-        .col-norma { width: 350px; } /* Columna ancha para la norma */
-        .col-naturaleza { width: 350px; } /* Columna ancha para la naturaleza de la causa */
-        .col-tipo-sentencia { width: 130px; }
-        .col-resultado { width: 150px; }
-        .col-acciones { width: 100px; text-align: center; } /* Columna de acciones con ancho fijo */
+        /* NUEVO: Clases flexibles para las columnas */
+        .col-rol { min-width: 100px; }
+        .col-fecha { min-width: 90px; }
+        .col-proveedor { min-width: 150px; }
+        .col-rut { min-width: 100px; }
+        .col-norma { min-width: 200px; } 
+        .col-naturaleza { min-width: 200px; } 
+        .col-tipo-sentencia { min-width: 120px; }
+        .col-resultado { min-width: 120px; }
+        .col-acciones { min-width: 100px; text-align: center; }
 
         #listadoSentencias, #listadoIniciadas {
             display: none;
@@ -419,7 +423,7 @@
     </template>
 
     <template id="templateVistaListadoSernac">
-        <div id="viewListadoSernacContainer" class="container">
+        <div id="viewListadoSernacContainer" class="container" style="max-width: 96% !important;">
             <h1 class="text-2xl md:text-3xl font-bold text-indigo-700 mb-8 text-left">Listado de Causas SERNAC Agregadas</h1>
             <div class="mb-6">
                 <label for="sernacListadoTypeSelector" class="block text-lg font-semibold text-gray-700 mb-2">Ver listado de:</label>
@@ -1458,9 +1462,9 @@
                         { name: "Fecha de sentencia", type: "text", placeholder: "DD/MM/AAAA", maxlength: 10, pattern: "\\d{2}/\\d{2}/\\d{4}", widthClass: "w-full sm:w-3/5", isDateText: true, isMainDateField: true } 
                     ] 
                 },
-                { name: "Nombre o razón social del proveedor denunciado/demandado/querellado", type: "textarea" },
-                { name: "RUT proveedor demandado/querellado", type: "text" },
-                { name: "Norma legal y/o reglamentaria que funda denuncia/demanda/querella (especificar artículo, inciso, letra o numeral)", type: "textarea" },
+                { name: "Nombre o razón social del proveedor denunciado, demandado, querellado", type: "textarea" },
+                { name: "RUT proveedor demandado, querellado", type: "text" },
+                { name: "Norma legal y/o reglamentaria que funda denuncia, demanda, querella (especificar artículo, inciso, letra o numeral)", type: "textarea" },
                 { name: "Tipo de Sentencia", type: "select", options: ["", "Definitiva", "Interlocutoria"] },
                 { name: "Resultado de Sentencia", type: "select", options: ["", "Condenatoria", "Absolutoria", "Avenimiento o Acuerdo Conciliatorio"] }
             ]
@@ -1495,9 +1499,9 @@
                         "Todas las anteriores"
                     ] 
                 },
-                { name: "Nombre o razón social del proveedor denunciado/demandado/querellado", type: "textarea" },
+                { name: "Nombre o razón social del proveedor denunciado, demandado, querellado", type: "textarea" },
                 { name: "Cédula de identidad o RUT", type: "text" },
-                { name: "Norma legal y/o reglamentaria que funda denuncia/demanda/querella (especificar artículo, inciso, letra o numeral)", type: "textarea" }
+                { name: "Norma legal y/o reglamentaria que funda denuncia, demanda, querella (especificar artículo, inciso, letra o numeral)", type: "textarea" }
             ]
         }
     };
@@ -1734,10 +1738,10 @@
             "Rol/N° de causa": "col-rol",
             "Fecha de sentencia": "col-fecha",
             "Fecha de inicio de la causa": "col-fecha",
-            "Nombre o razón social del proveedor denunciado/demandado/querellado": "col-proveedor",
-            "RUT proveedor demandado/querellado": "col-rut",
+            "Nombre o razón social del proveedor denunciado, demandado, querellado": "col-proveedor",
+            "RUT proveedor demandado, querellado": "col-rut",
             "Cédula de identidad o RUT": "col-rut",
-            "Norma legal y/o reglamentaria que funda denuncia/demanda/querella (especificar artículo, inciso, letra o numeral)": "col-norma",
+            "Norma legal y/o reglamentaria que funda denuncia, demanda, querella (especificar artículo, inciso, letra o numeral)": "col-norma",
             "Naturaleza de la causa": "col-naturaleza",
             "Tipo de Sentencia": "col-tipo-sentencia",
             "Resultado de Sentencia": "col-resultado",
